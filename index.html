@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -249,8 +250,8 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
 
   <!-- 헤더 카드: 프로필·레벨·XP·이행률 링 -->
   <div class="header-card">
-    <div class="avatar-wrap" onclick="goPage('settings',document.querySelectorAll('.tab')[3])"  title="프로필 사진 변경">
-      <div class="avatar" id="avatar-el"><span id="avatar-char">🌱</span></div>
+    <div class="avatar-wrap" onclick="triggerAvatarPick()" title="프로필 사진 변경">
+      <div class="avatar" id="avatar-el"><span style="font-size:26px">🌱</span></div>
     </div>
     <div class="header-info">
       <div class="header-lv"><span class="header-lv-chip" id="lv-chip">🌱 Lv.1 씨앗</span></div>
@@ -386,17 +387,17 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
   <div class="card" style="margin-top:8px">
     <div class="card-title">👤 프로필 사진</div>
     <div style="display:flex;align-items:center;gap:16px">
-      <div id="settings-avatar" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex-shrink:0;cursor:pointer;" onclick="document.getElementById('settings-avatar-input').click()">
+      <div id="settings-avatar" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex-shrink:0;cursor:pointer;position:relative" onclick="triggerAvatarPick()">
         <span id="settings-avatar-char">🌱</span>
       </div>
       <div>
-        <div style="font-size:15px;font-weight:600;margin-bottom:6px">사진 변경</div>
-        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">탭하거나 버튼을 눌러 변경</div>
-        <button onclick="document.getElementById('settings-avatar-input').click()" style="padding:8px 16px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">사진 선택</button>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">프로필 사진 변경</div>
+        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">사진을 선택하면 홈 화면에 바로 반영돼요</div>
+        <button onclick="triggerAvatarPick()" style="padding:8px 16px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">사진 선택</button>
         <button onclick="clearAvatar()" style="padding:8px 14px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-left:8px">초기화</button>
       </div>
     </div>
-    <input type="file" accept="image/*" id="settings-avatar-input" style="display:none" onchange="uploadAvatarFromSettings(this)">
+    <input type="file" accept="image/*" id="avatar-file-input" style="display:none" onchange="handleAvatarFile(this)">
   </div>
 
   <!-- 유튜브 영상 편집 -->
@@ -789,7 +790,6 @@ function renderEx(){
   if(!list.length){el.innerHTML=`<div style="color:var(--txt2);text-align:center;padding:20px 0;font-size:14px">운동이 없어요</div>`;return;}
   el.innerHTML=list.map(e=>{
     const done=DB.exChecked[e.id];
-    const val=DB.exInputs[e.id]||'';
     const ytId=e.yt||'';
     const ytBtn=ytId
       ? `<button class="yt-btn" onclick="openYT('${e.id}','${e.name}')" title="유튜브 영상 열기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`
@@ -800,10 +800,6 @@ function renderEx(){
         <div class="ex-name ${done?'done':''}">${e.name}</div>
       </div>
       <div class="ex-right">
-        <div class="ex-input-wrap">
-          <input class="ex-inp" type="number" placeholder="0" value="${val}" onchange="DB.exInputs['${e.id}']=this.value;saveDB()">
-          <span class="ex-unit">${e.unit}</span>
-        </div>
         ${ytBtn}
         <div class="ex-coin">+${e.xp}XP</div>
       </div>
@@ -1104,15 +1100,7 @@ function showBadge(msg){
 //  설정 탭
 // ═══════════════════════════════════════════════════════════
 function renderSettings(){
-  const li=getLv(DB.totalXP);
-  const sa=document.getElementById('settings-avatar');
-  if(sa){
-    if(DB.avatar){
-      sa.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else {
-      sa.innerHTML=`<span style="font-size:32px">${li.char.emoji}</span>`;
-    }
-  }
+  applyAvatarEverywhere();
   renderYtEditList();
 }
 
@@ -1171,21 +1159,38 @@ function deleteEx(id){
 }
 
 // ─── 아바타 (설정 탭) ───
-function uploadAvatarFromSettings(input){
-  const file=input.files[0];if(!file)return;
+// ═══════════════════════════════════════════════════════════
+//  프로필 사진
+// ═══════════════════════════════════════════════════════════
+function triggerAvatarPick(){
+  document.getElementById('avatar-file-input').click();
+}
+
+function handleAvatarFile(input){
+  const file=input.files[0];
+  if(!file)return;
   const reader=new FileReader();
-  reader.onload=e=>{
+  reader.onload=function(e){
     const img=new Image();
-    img.onload=()=>{
+    img.onload=function(){
+      // 최대 300px로 리사이즈 후 저장
       const canvas=document.createElement('canvas');
       const max=300;
       let w=img.width,h=img.height;
-      if(w>max||h>max){const r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
-      canvas.width=w;canvas.height=h;
+      if(w>max||h>max){
+        const ratio=Math.min(max/w,max/h);
+        w=Math.round(w*ratio);
+        h=Math.round(h*ratio);
+      }
+      canvas.width=w;
+      canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      DB.avatar=canvas.toDataURL('image/jpeg',0.8);
-      saveDB();applyAvatar();renderSettings();
+      DB.avatar=canvas.toDataURL('image/jpeg',0.85);
+      saveDB();
+      applyAvatarEverywhere();
       showBadge('프로필 사진 저장됨 ✓');
+      // input 초기화 (같은 사진 재선택 가능하도록)
+      input.value='';
     };
     img.src=e.target.result;
   };
@@ -1193,19 +1198,40 @@ function uploadAvatarFromSettings(input){
 }
 
 function clearAvatar(){
-  DB.avatar='';saveDB();applyAvatar();renderSettings();
+  DB.avatar='';
+  saveDB();
+  applyAvatarEverywhere();
+  showBadge('초기화됨');
 }
 
-function applyAvatar(){
+function applyAvatarEverywhere(){
   const li=getLv(DB.totalXP);
-  const av=document.getElementById('avatar-el');
-  if(!av)return;
-  if(DB.avatar){
-    av.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-  } else {
-    av.innerHTML=`<span style="font-size:26px">${li.char.emoji}</span>`;
+  const emoji=li.char.emoji;
+
+  // 1. 홈 탭 아바타
+  const homeAv=document.getElementById('avatar-el');
+  if(homeAv){
+    if(DB.avatar){
+      homeAv.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      homeAv.innerHTML=`<span style="font-size:26px">${emoji}</span>`;
+    }
+  }
+
+  // 2. 설정 탭 미리보기
+  const settingsAv=document.getElementById('settings-avatar');
+  if(settingsAv){
+    if(DB.avatar){
+      settingsAv.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      settingsAv.innerHTML=`<span style="font-size:32px">${emoji}</span>`;
+    }
   }
 }
+
+// 기존 함수명 호환 유지
+function applyAvatar(){applyAvatarEverywhere();}
+function uploadAvatarFromSettings(input){handleAvatarFile(input);}
 
 // ─── 데이터 관리 ───
 function resetToday(){
@@ -1232,7 +1258,7 @@ if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js').catc
 function init(){
   checkReset();
   renderQuote();
-  applyAvatar();
+  applyAvatarEverywhere();
   updateHeader();
   renderCore();renderBonus();renderTodos();renderEx();
   updateStats();renderStreak();renderMemo();updateComboBanner();
