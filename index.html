@@ -31,10 +31,10 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
 .card-title{font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
 
 /* ─── 격언 ─── */
-.quote-card{background:var(--dark);border-radius:var(--r);padding:18px 48px 18px 20px;margin:8px 14px 11px;position:relative;overflow:hidden;cursor:pointer;}
-.quote-card::before{content:'"';position:absolute;top:-12px;left:8px;font-size:90px;color:rgba(255,255,255,.05);font-family:Georgia,serif;line-height:1;}
-.quote-txt{font-size:15px;font-weight:500;color:#fff;line-height:1.65;}
-.quote-src{font-size:11px;color:rgba(255,255,255,.45);margin-top:6px;}
+.quote-card{background:var(--dark);border-radius:var(--r);padding:16px 20px 16px 20px;margin:8px 14px 11px;position:relative;cursor:pointer;}
+.quote-card::before{content:'"';position:absolute;top:-12px;left:8px;font-size:90px;color:rgba(255,255,255,.05);font-family:Georgia,serif;line-height:1;pointer-events:none;}
+.quote-txt{font-size:15px;font-weight:500;color:#fff;line-height:1.7;padding-right:36px;word-break:keep-all;}
+.quote-src{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px;}
 .quote-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;font-size:15px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 
 /* ─── 헤더 카드 ─── */
@@ -247,9 +247,8 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
 
   <!-- 헤더 카드: 프로필·레벨·XP·이행률 링 -->
   <div class="header-card">
-    <div class="avatar-wrap" onclick="document.getElementById('avatar-input').click()">
+    <div class="avatar-wrap" onclick="goPage('settings',document.querySelectorAll('.tab')[3])"  title="프로필 사진 변경">
       <div class="avatar" id="avatar-el"><span id="avatar-char">🌱</span></div>
-      <input type="file" accept="image/*" class="avatar-input" id="avatar-input" onchange="uploadAvatar(this)">
     </div>
     <div class="header-info">
       <div class="header-lv"><span class="header-lv-chip" id="lv-chip">🌱 Lv.1 씨앗</span></div>
@@ -384,11 +383,61 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
   </div>
 </div>
 
+<!-- ═══ 설정 탭 ═══ -->
+<div class="page" id="pg-settings">
+
+  <!-- 프로필 사진 -->
+  <div class="card" style="margin-top:8px">
+    <div class="card-title">👤 프로필 사진</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div id="settings-avatar" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex-shrink:0;cursor:pointer;" onclick="document.getElementById('settings-avatar-input').click()">
+        <span id="settings-avatar-char">🌱</span>
+      </div>
+      <div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:6px">사진 변경</div>
+        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">탭하거나 버튼을 눌러 변경</div>
+        <button onclick="document.getElementById('settings-avatar-input').click()" style="padding:8px 16px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">사진 선택</button>
+        <button onclick="clearAvatar()" style="padding:8px 14px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-left:8px">초기화</button>
+      </div>
+    </div>
+    <input type="file" accept="image/*" id="settings-avatar-input" style="display:none" onchange="uploadAvatarFromSettings(this)">
+  </div>
+
+  <!-- 유튜브 영상 편집 -->
+  <div class="card">
+    <div class="card-title">🎬 운동 영상 링크 편집</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6">유튜브 영상이 맞지 않으면 직접 바꿀 수 있어요.<br>유튜브에서 영상을 열고 주소를 복사해서 붙여넣으세요.</div>
+    <div id="yt-edit-list"></div>
+  </div>
+
+  <!-- 데이터 관리 -->
+  <div class="card">
+    <div class="card-title">⚙️ 데이터 관리</div>
+    <div class="ex-item">
+      <div class="ex-info">
+        <div class="ex-name">오늘 데이터 초기화</div>
+        <div class="ex-desc">오늘 체크·XP만 리셋. 누적 기록은 유지</div>
+      </div>
+      <button onclick="resetToday()" style="padding:7px 14px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">초기화</button>
+    </div>
+    <div class="ex-item" style="border-bottom:none">
+      <div class="ex-info">
+        <div class="ex-name" style="color:#FF3B30">전체 데이터 삭제</div>
+        <div class="ex-desc">모든 기록·XP·스트릭 삭제. 되돌릴 수 없어요</div>
+      </div>
+      <button onclick="resetAll()" style="padding:7px 14px;background:transparent;color:#FF3B30;border:1.5px solid #FF3B30;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">삭제</button>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:16px;font-size:12px;color:var(--txt3)">3FIT v2.0 · 앱 100개 챌린지 #3</div>
+</div>
+
 <!-- ═══ 탭바 ═══ -->
 <nav class="tabbar">
   <div class="tab on" onclick="goPage('home',this)"><div class="tab-ico">🏠</div><div class="tab-lbl">오늘</div></div>
   <div class="tab" onclick="goPage('cal',this)"><div class="tab-ico">📅</div><div class="tab-lbl">캘린더</div></div>
   <div class="tab" onclick="goPage('growth',this)"><div class="tab-ico">🌱</div><div class="tab-lbl">성장</div></div>
+  <div class="tab" onclick="goPage('settings',this)"><div class="tab-ico">⚙️</div><div class="tab-lbl">설정</div></div>
 </nav>
 
 <!-- ═══ 유튜브 모달 ═══ -->
@@ -511,26 +560,26 @@ const BONUS_MISSIONS=[
 ];
 
 const EXERCISES=[
-  {id:'e1',name:'턱걸이',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'dQw4w9WgXcQ',desc:'등·이두 강화'},
-  {id:'e2',name:'푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'IODxDxX7oi4',desc:'가슴·삼두 강화'},
-  {id:'e3',name:'파이크 푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:7,yt:'sposDXWEB0A',desc:'어깨 강화'},
+  {id:'e1',name:'턱걸이',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'eGo4IYlbE5g',desc:'등·이두 강화'},
+  {id:'e2',name:'푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'44MbRYmXLWk',desc:'가슴·삼두 강화'},
+  {id:'e3',name:'파이크 푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:7,yt:'x7_I5SO8bkM',desc:'어깨 강화'},
   {id:'e4',name:'딥스',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'2z8JmcrW-As',desc:'삼두·가슴 하부'},
-  {id:'e5',name:'플랭크',zone:'core',cat:'strength',unit:'초',xp:7,yt:'pSHjTRCQxIw',desc:'코어 전체 강화'},
-  {id:'e6',name:'크런치',zone:'core',cat:'strength',unit:'회',xp:5,yt:'Xyd_fa5zoEU',desc:'복근 상부'},
-  {id:'e7',name:'레그레이즈',zone:'core',cat:'strength',unit:'회',xp:6,yt:'l4kQd9eWclE',desc:'복근 하부'},
-  {id:'e8',name:'슈퍼맨',zone:'core',cat:'strength',unit:'회',xp:5,yt:'cc6UVRS7PW4',desc:'허리 근육 강화'},
-  {id:'e9',name:'스쿼트',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'aclHkVaku9U',desc:'허벅지·엉덩이'},
+  {id:'e5',name:'플랭크',zone:'core',cat:'strength',unit:'초',xp:7,yt:'ASdvN_XEl_c',desc:'코어 전체 강화'},
+  {id:'e6',name:'크런치',zone:'core',cat:'strength',unit:'회',xp:5,yt:'MKmrqcJjlGE',desc:'복근 상부'},
+  {id:'e7',name:'레그레이즈',zone:'core',cat:'strength',unit:'회',xp:6,yt:'JB2oyawG9KQ',desc:'복근 하부'},
+  {id:'e8',name:'슈퍼맨',zone:'core',cat:'strength',unit:'회',xp:5,yt:'z6PJMT2y8GQ',desc:'허리 근육 강화'},
+  {id:'e9',name:'스쿼트',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'YaXPRqUwItQ',desc:'허벅지·엉덩이'},
   {id:'e10',name:'런지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'QOVaHwm-Q6U',desc:'다리 균형 강화'},
-  {id:'e11',name:'힙브릿지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'8bbE64NuDTU',desc:'엉덩이·햄스트링'},
+  {id:'e11',name:'힙브릿지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'OUgsJ8-Vi0E',desc:'엉덩이·햄스트링'},
   {id:'e12',name:'카프레이즈',zone:'lower',cat:'strength',unit:'회',xp:4,yt:'gwLzBJYoWlI',desc:'종아리 강화'},
-  {id:'e13',name:'제자리 뛰기',zone:'cardio',cat:'cardio',unit:'분',xp:8,yt:'oCMh_lU4ER8',desc:'심폐 강화'},
+  {id:'e13',name:'제자리 뛰기',zone:'cardio',cat:'cardio',unit:'분',xp:8,yt:'FjHGZj2IjBk',desc:'심폐 강화'},
   {id:'e14',name:'버피',zone:'cardio',cat:'cardio',unit:'회',xp:10,yt:'dZgVxmf6jkA',desc:'전신 유산소'},
-  {id:'e15',name:'점핑잭',zone:'cardio',cat:'cardio',unit:'회',xp:6,yt:'CWpmIW6l-YA',desc:'워밍업·유산소'},
+  {id:'e15',name:'점핑잭',zone:'cardio',cat:'cardio',unit:'회',xp:6,yt:'iSSAk4XCsRA',desc:'워밍업·유산소'},
   {id:'e16',name:'마운틴클라이머',zone:'cardio',cat:'cardio',unit:'회',xp:8,yt:'nmwgirgXLYM',desc:'코어+유산소'},
-  {id:'e17',name:'고양이소 자세',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'kqnua4rHVVA',desc:'척추 이완'},
+  {id:'e17',name:'고양이소 자세',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'RqcOCBb4arc',desc:'척추 이완'},
   {id:'e18',name:'햄스트링 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'WxbMVFOoMoA',desc:'허벅지 뒤쪽'},
   {id:'e19',name:'어깨 돌리기',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'g_NxHzAnFOE',desc:'어깨 이완'},
-  {id:'e20',name:'목 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'',desc:'목·어깨 이완'},
+  {id:'e20',name:'목 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'wQylqaW6p7A',desc:'목·어깨 이완'},
 ];
 
 const CHARS=[
@@ -572,6 +621,7 @@ function loadDB(){
     exChecked:{},exInputs:{},todos:[],todayMemo:'',
     history:{},avatar:'',quoteIdx:0,
     customEx:[],rewards:JSON.parse(JSON.stringify(DEFAULT_REWARDS)),
+    ytOverrides:{},
   };
   try{return Object.assign(def,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch{return def;}
 }
@@ -618,6 +668,7 @@ function goPage(id,el){
   el.classList.add('on');
   if(id==='cal')renderCal();
   if(id==='growth')renderGrowth();
+  if(id==='settings')renderSettings();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -742,7 +793,8 @@ function renderEx(){
   el.innerHTML=list.map(e=>{
     const done=DB.exChecked[e.id];
     const val=DB.exInputs[e.id]||'';
-    const ytBtn=e.yt?`<button class="yt-btn" onclick="openYT('${e.yt}','${e.name}')" title="영상 보기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`:'';
+    const ytId=DB.ytOverrides[e.id]||(e.yt||'');
+    const ytBtn=ytId?`<button class="yt-btn" onclick="openYT('${e.id}','${e.name}')" title="영상 보기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`:'<button class="yt-btn" style="background:var(--txt3);cursor:pointer" onclick="goPage(\'settings\',document.querySelectorAll(\'.tab\')[3])" title="영상 없음 — 설정에서 추가"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
     return`<div class="ex-item">
       <div class="ex-chk ${done?'done':''}" onclick="toggleEx('${e.id}',${e.xp})">${done?'✓':''}</div>
       <div class="ex-info">
@@ -975,9 +1027,10 @@ function saveCustomEx(){
 //  유튜브 모달 (iframe 임베드 — 프리미엄 광고 없음)
 // ═══════════════════════════════════════════════════════════
 function openYT(videoId,name){
+  const finalId=DB.ytOverrides[videoId]||videoId;
+  if(!finalId){alert('영상 주소가 없어요.\n설정 탭에서 유튜브 링크를 추가해주세요.');return;}
   document.getElementById('yt-modal-title').textContent=name||'운동 영상';
-  // autoplay=1, rel=0(관련영상 제한), modestbranding=1(로고 최소화)
-  document.getElementById('yt-frame').src=`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  document.getElementById('yt-frame').src=`https://www.youtube.com/embed/${finalId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
   document.getElementById('yt-modal').classList.add('show');
 }
 function closeYT(){
@@ -985,18 +1038,9 @@ function closeYT(){
   document.getElementById('yt-modal').classList.remove('show');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  아바타 업로드
-// ═══════════════════════════════════════════════════════════
-function uploadAvatar(input){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    DB.avatar=e.target.result;saveDB();
-    const av=document.getElementById('avatar-el');
-    av.innerHTML=`<img src="${DB.avatar}" alt="avatar">`;
-  };
-  reader.readAsDataURL(file);
+// ─── 홈 탭 아바타 클릭 → 설정 탭으로 이동 ───
+function uploadAvatar(){
+  goPage('settings', document.querySelectorAll('.tab')[3]);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1053,6 +1097,104 @@ function showBadge(msg){
 }
 
 // ═══════════════════════════════════════════════════════════
+//  설정 탭
+// ═══════════════════════════════════════════════════════════
+function renderSettings(){
+  // 프로필 아바타 미리보기
+  const li=getLv(DB.totalXP);
+  const sa=document.getElementById('settings-avatar');
+  const sc=document.getElementById('settings-avatar-char');
+  if(DB.avatar){
+    sa.innerHTML=`<img src="${DB.avatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    sa.innerHTML=`<span id="settings-avatar-char" style="font-size:32px">${li.char.emoji}</span>`;
+  }
+  renderYtEditList();
+}
+
+function renderYtEditList(){
+  const all=[...EXERCISES,...DB.customEx];
+  document.getElementById('yt-edit-list').innerHTML=all.map((e,i)=>{
+    const currentYtId=DB.ytOverrides[e.id]||e.yt||'';
+    const currentUrl=currentYtId?`https://youtu.be/${currentYtId}`:'';
+    return`<div style="padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">${e.name}</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input
+          id="yt-inp-${e.id}"
+          style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg)"
+          placeholder="유튜브 주소 붙여넣기"
+          value="${currentUrl}"
+          onfocus="this.style.borderColor='var(--p)'"
+          onblur="this.style.borderColor='var(--border)'"
+        >
+        <button onclick="saveYtLink('${e.id}')" style="padding:8px 12px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">저장</button>
+        ${currentYtId?`<button onclick="clearYtLink('${e.id}')" style="padding:8px 10px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:9px;font-size:13px;cursor:pointer;flex-shrink:0">✕</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveYtLink(id){
+  const raw=document.getElementById('yt-inp-'+id).value.trim();
+  if(!raw){clearYtLink(id);return;}
+  const m=raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  if(m){
+    DB.ytOverrides[id]=m[1];saveDB();
+    renderYtEditList();
+    showBadge('영상 저장됨 ✓');
+  } else {
+    alert('유튜브 주소가 맞지 않아요.\nhttps://youtu.be/... 형태로 복사해주세요.');
+  }
+}
+
+function clearYtLink(id){
+  delete DB.ytOverrides[id];saveDB();
+  renderYtEditList();
+}
+
+// ─── 아바타 (설정 탭) ───
+function uploadAvatarFromSettings(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    DB.avatar=e.target.result;saveDB();
+    applyAvatar();
+    renderSettings();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearAvatar(){
+  DB.avatar='';saveDB();applyAvatar();renderSettings();
+}
+
+function applyAvatar(){
+  const li=getLv(DB.totalXP);
+  // 홈 탭 아바타
+  const av=document.getElementById('avatar-el');
+  if(DB.avatar){
+    av.innerHTML=`<img src="${DB.avatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    av.innerHTML=`<span id="avatar-char">${li.char.emoji}</span>`;
+  }
+}
+
+// ─── 데이터 관리 ───
+function resetToday(){
+  if(!confirm('오늘 데이터를 초기화할까요?\n누적 XP와 히스토리는 유지됩니다.'))return;
+  DB.coreChecked=[0,0,0];DB.bonusChecked=[0,0,0];
+  DB.exChecked={};DB.exInputs={};DB.todayXP=0;DB.todayMemo='';
+  DB.todos=[];saveDB();
+  renderCore();renderBonus();renderTodos();renderEx();updateHeader();updateStats();renderStreak();renderMemo();
+  showBadge('오늘 데이터 초기화됨');
+}
+function resetAll(){
+  if(!confirm('정말 모든 데이터를 삭제할까요?\n이 작업은 되돌릴 수 없어요.'))return;
+  localStorage.removeItem(KEY);location.reload();
+}
+
+// ═══════════════════════════════════════════════════════════
 //  PWA Service Worker
 // ═══════════════════════════════════════════════════════════
 if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
@@ -1063,7 +1205,7 @@ if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js').catc
 function init(){
   checkReset();
   renderQuote();
-  if(DB.avatar){document.getElementById('avatar-el').innerHTML=`<img src="${DB.avatar}" alt="avatar">`;}
+  applyAvatar();
   updateHeader();
   renderCore();renderBonus();renderTodos();renderEx();
   updateStats();renderStreak();renderMemo();updateComboBanner();
