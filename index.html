@@ -307,19 +307,15 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
   </div>
 
   <!-- 부위별 운동 -->
-  <div class="zone-tabs" id="zone-tabs">
-    <div class="ztab on" onclick="setZone('all',this)">전체</div>
-    <div class="ztab" onclick="setZone('upper',this)">상체 💪</div>
-    <div class="ztab" onclick="setZone('core',this)">허리·코어 🔄</div>
-    <div class="ztab" onclick="setZone('lower',this)">하체 🦵</div>
-    <div class="ztab" onclick="setZone('stretch',this)">스트레칭 🧘</div>
-  </div>
+  <!-- zone-tabs 제거 — 카드 내 카테고리 탭으로 통합 -->
 
   <div class="card">
     <div class="cat-tabs">
-      <div class="ctab on" onclick="setCat('strength',this)">근력</div>
-      <div class="ctab" onclick="setCat('stretch',this)">스트레칭</div>
-      <div class="ctab" onclick="setCat('my',this)">내 루틴</div>
+      <div class="ctab on" onclick="setZone('upper',this)">상체 💪</div>
+      <div class="ctab" onclick="setZone('core',this)">허리 🔄</div>
+      <div class="ctab" onclick="setZone('lower',this)">하체 🦵</div>
+      <div class="ctab" onclick="setZone('stretch',this)">스트레칭 🧘</div>
+      <div class="ctab" onclick="setZone('challenge',this)">챌린지 🏆</div>
     </div>
     <div id="ex-list"></div>
     <button class="add-routine-btn" onclick="showAddForm()">＋ 내 루틴 추가</button>
@@ -483,8 +479,9 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
     <div class="form-field"><div class="form-label">운동 이름</div><input class="form-input" id="f-name" placeholder="예: 플랭크"></div>
     <div class="form-field"><div class="form-label">부위</div>
       <select class="form-input" id="f-zone">
-        <option value="upper">상체</option><option value="core">코어</option>
-        <option value="lower">하체</option><option value="cardio">유산소</option><option value="stretch">스트레칭</option>
+        <option value="upper">상체</option><option value="core">허리·코어</option>
+        <option value="lower">하체</option><option value="stretch">스트레칭</option>
+        <option value="challenge">챌린지</option>
       </select>
     </div>
     <div style="display:flex;gap:8px">
@@ -548,23 +545,28 @@ const BONUS_MISSIONS=[
   {id:'b3',emoji:'🧘',name:'명상 or 호흡 3분',xp:15,msgs:['마음이 고요해지고 있어요 🧘','정신 건강도 중요해요!','몸과 마음 모두 케어 완료!']},
 ];
 
-const EXERCISES=[
-  // ── 상체 (바벨라토르 리쌤) ──
-  {id:'e1',name:'턱걸이 정자세',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'nWhS28U6bCY',desc:'바벨라토르 · 완벽한 풀업 교본'},
-  {id:'e2',name:'턱걸이 초보 루틴',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'wyCLYroscSM',desc:'바벨라토르 · 초보자 시작법'},
-  {id:'e3',name:'푸쉬업 자세',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'8txh_smTqPA',desc:'바벨라토르 · 가슴 자극 200%'},
-  // ── 허리·코어 ──
-  {id:'e4',name:'플랭크 정석',zone:'core',cat:'strength',unit:'초',xp:7,yt:'Zq8nRY9P_cM',desc:'바벨라토르 · 완벽한 플랭크 교본'},
-  {id:'e5',name:'플랭크 허리 건강',zone:'core',cat:'strength',unit:'초',xp:7,yt:'opjhqOYNFJE',desc:'송영민 · 허리 코어 강화'},
-  {id:'e6',name:'뱃살 코어 운동',zone:'core',cat:'strength',unit:'분',xp:6,yt:'JkQJCiHOPTQ',desc:'뱃살 빼는 코어 루틴'},
-  // ── 하체 ──
-  {id:'e7',name:'스쿼트·런지 자세',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'0LSfy60yRpM',desc:'송영민 · 무릎 안전하게 하체 운동'},
-  {id:'e8',name:'런지 기본기',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'iMoW5neyRFk',desc:'최고의 하체운동 런지 배우기'},
-  {id:'e9',name:'맨몸 하체 루틴',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'Ij5b22zQss0',desc:'데스런 · 스쿼트·런지 단계별'},
-  // ── 스트레칭 ──
-  {id:'e10',name:'13분 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'5J2a4uUrY2U',desc:'소미핏 · 전신순환·근육이완'},
-  {id:'e11',name:'골반 체형 교정',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'nQlbDogfCpE',desc:'소미핏 · 골반·체형교정 스트레칭'},
-  {id:'e12',name:'운동 전 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'oquaP1cFBqY',desc:'세모핏 · 부상예방 스트레칭'},
+// 기본 운동 데이터 (desc 제거, 챌린지 카테고리 추가)
+const DEFAULT_EXERCISES=[
+  // 상체
+  {id:'e1',name:'턱걸이 정자세',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'nWhS28U6bCY'},
+  {id:'e2',name:'턱걸이 초보 루틴',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'wyCLYroscSM'},
+  {id:'e3',name:'푸쉬업 자세',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'8txh_smTqPA'},
+  // 허리·코어
+  {id:'e4',name:'플랭크 정석',zone:'core',cat:'strength',unit:'초',xp:7,yt:'Zq8nRY9P_cM'},
+  {id:'e5',name:'플랭크 허리 건강',zone:'core',cat:'strength',unit:'초',xp:7,yt:'opjhqOYNFJE'},
+  {id:'e6',name:'뱃살 코어 운동',zone:'core',cat:'strength',unit:'분',xp:6,yt:'JkQJCiHOPTQ'},
+  // 하체
+  {id:'e7',name:'스쿼트·런지 자세',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'0LSfy60yRpM'},
+  {id:'e8',name:'런지 기본기',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'iMoW5neyRFk'},
+  {id:'e9',name:'맨몸 하체 루틴',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'Ij5b22zQss0'},
+  // 스트레칭
+  {id:'e10',name:'13분 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'5J2a4uUrY2U'},
+  {id:'e11',name:'골반 체형 교정',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'nQlbDogfCpE'},
+  {id:'e12',name:'운동 전 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'oquaP1cFBqY'},
+  // 챌린지
+  {id:'e13',name:'푸쉬업 100개 챌린지',zone:'challenge',cat:'challenge',unit:'회',xp:20,yt:'HBLGAgS8DhQ'},
+  {id:'e14',name:'30일 플랭크 챌린지',zone:'challenge',cat:'challenge',unit:'초',xp:20,yt:'SIO3FQPlqN4'},
+  {id:'e15',name:'맨몸 전신 10분',zone:'challenge',cat:'challenge',unit:'분',xp:15,yt:'W7ujfRLNsu4'},
 ];
 
 const CHARS=[
@@ -605,13 +607,23 @@ function loadDB(){
     coreChecked:[0,0,0],bonusChecked:[0,0,0],
     exChecked:{},exInputs:{},todos:[],todayMemo:'',
     history:{},avatar:'',quoteIdx:0,
-    customEx:[],rewards:JSON.parse(JSON.stringify(DEFAULT_REWARDS)),
+    rewards:JSON.parse(JSON.stringify(DEFAULT_REWARDS)),
     ytOverrides:{},
+    // 운동 데이터 DB 저장 (편집 영구 반영)
+    exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)),
   };
-  try{return Object.assign(def,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch{return def;}
+  try{
+    const saved=JSON.parse(localStorage.getItem(KEY)||'{}');
+    const merged=Object.assign(def,saved);
+    // 기존 저장 데이터에 exercises 없으면 기본값 사용
+    if(!saved.exercises) merged.exercises=JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
+    return merged;
+  }catch{return def;}
 }
 function saveDB(){localStorage.setItem(KEY,JSON.stringify(DB));}
 let DB=loadDB();
+// 편의 함수: DB.exercises 항상 참조
+function allExercises(){return DB.exercises||[];}
 
 // ═══════════════════════════════════════════════════════════
 //  자정 초기화
@@ -758,17 +770,17 @@ function toggleBonus(i){
 // ═══════════════════════════════════════════════════════════
 //  운동 목록 (부위별)
 // ═══════════════════════════════════════════════════════════
-let curZone='all',curCat='strength';
-function setZone(z,el){curZone=z;document.querySelectorAll('.ztab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderEx();}
+let curZone='upper',curCat='all';
+function setZone(z,el){
+  curZone=z;
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  renderEx();
+}
 function setCat(c,el){curCat=c;document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderEx();}
 
 function getFilteredEx(){
-  const all=[...EXERCISES,...DB.customEx.map(e=>({...e,cat:'my'}))];
-  return all.filter(e=>{
-    const zo=curZone==='all'||e.zone===curZone;
-    const ca=curCat==='my'?e.cat==='my':e.cat===curCat;
-    return zo&&ca;
-  });
+  return allExercises().filter(e=>e.zone===curZone);
 }
 
 function renderEx(){
@@ -778,7 +790,7 @@ function renderEx(){
   el.innerHTML=list.map(e=>{
     const done=DB.exChecked[e.id];
     const val=DB.exInputs[e.id]||'';
-    const ytId=DB.ytOverrides[e.id]||(e.yt||'');
+    const ytId=e.yt||'';
     const ytBtn=ytId
       ? `<button class="yt-btn" onclick="openYT('${e.id}','${e.name}')" title="유튜브 영상 열기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`
       : `<button class="yt-btn no-yt" onclick="goPage('settings',document.querySelectorAll('.tab')[3])" title="영상 없음 — 설정에서 추가"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`;
@@ -786,7 +798,6 @@ function renderEx(){
       <div class="ex-chk ${done?'done':''}" onclick="toggleEx('${e.id}',${e.xp})">${done?'✓':''}</div>
       <div class="ex-info">
         <div class="ex-name ${done?'done':''}">${e.name}</div>
-        <div class="ex-desc">${e.desc||''}</div>
       </div>
       <div class="ex-right">
         <div class="ex-input-wrap">
@@ -1002,33 +1013,29 @@ function saveCustomEx(){
   const unit=document.getElementById('f-unit').value.trim()||'회';
   const xp=parseInt(document.getElementById('f-coin').value)||10;
   const ytRaw=document.getElementById('f-yt').value.trim();
-  let ytId='';
-  if(ytRaw){const m=ytRaw.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);if(m)ytId=m[1];}
-  DB.customEx.push({id:'c'+Date.now(),name,zone,cat:'my',unit,xp,yt:ytId,desc:'내 루틴'});
+  let yt='';
+  if(ytRaw){const m=ytRaw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);if(m)yt=m[1];}
+  DB.exercises.push({id:'c'+Date.now(),name,zone,cat:'custom',unit,xp,yt,custom:true});
   saveDB();closePop('pop-add');
   ['f-name','f-unit','f-yt'].forEach(id=>document.getElementById(id).value='');
-  renderEx();
+  renderEx();renderYtEditList();
 }
 
 // ═══════════════════════════════════════════════════════════
 //  유튜브 모달 (iframe 임베드 — 프리미엄 광고 없음)
 // ═══════════════════════════════════════════════════════════
 function openYT(exId, name){
-  const e=[...EXERCISES,...DB.customEx].find(x=>x.id===exId);
-  const finalId=DB.ytOverrides[exId]||(e?e.yt:'');
+  const e=allExercises().find(x=>x.id===exId);
+  const finalId=e?e.yt:'';
   if(!finalId){
     alert('영상 주소가 없어요.\n⚙️ 설정 탭에서 유튜브 링크를 추가해주세요.');
     return;
   }
-  // 유튜브 앱 딥링크 → 앱 없으면 브라우저로 fallback
   const ytApp='youtube://www.youtube.com/watch?v='+finalId;
   const ytWeb='https://www.youtube.com/watch?v='+finalId;
-  // iOS: youtube:// 시도, 300ms 후 앱 미설치면 웹으로
   const start=Date.now();
   window.location.href=ytApp;
-  setTimeout(()=>{
-    if(Date.now()-start<400) window.open(ytWeb,'_blank');
-  },300);
+  setTimeout(()=>{if(Date.now()-start<400)window.open(ytWeb,'_blank');},300);
 }
 function closeYT(){
   document.getElementById('yt-frame').src='';
@@ -1097,57 +1104,70 @@ function showBadge(msg){
 //  설정 탭
 // ═══════════════════════════════════════════════════════════
 function renderSettings(){
-  // 프로필 아바타 미리보기
   const li=getLv(DB.totalXP);
   const sa=document.getElementById('settings-avatar');
-  const sc=document.getElementById('settings-avatar-char');
-  if(DB.avatar){
-    sa.innerHTML=`<img src="${DB.avatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-  } else {
-    sa.innerHTML=`<span id="settings-avatar-char" style="font-size:32px">${li.char.emoji}</span>`;
+  if(sa){
+    if(DB.avatar){
+      sa.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      sa.innerHTML=`<span style="font-size:32px">${li.char.emoji}</span>`;
+    }
   }
   renderYtEditList();
 }
 
+const ZONE_LABELS={'upper':'상체','core':'허리·코어','lower':'하체','stretch':'스트레칭','challenge':'챌린지'};
+
 function renderYtEditList(){
-  const all=[...EXERCISES,...DB.customEx];
+  const all=allExercises();
   document.getElementById('yt-edit-list').innerHTML=all.map((e,i)=>{
-    const currentYtId=DB.ytOverrides[e.id]||e.yt||'';
-    const currentUrl=currentYtId?`https://youtu.be/${currentYtId}`:'';
-    return`<div style="padding:12px 0;border-bottom:1px solid var(--border);">
-      <div style="font-size:14px;font-weight:600;margin-bottom:6px">${e.name}</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input
-          id="yt-inp-${e.id}"
-          style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg)"
-          placeholder="유튜브 주소 붙여넣기"
-          value="${currentUrl}"
-          onfocus="this.style.borderColor='var(--p)'"
-          onblur="this.style.borderColor='var(--border)'"
-        >
-        <button onclick="saveYtLink('${e.id}')" style="padding:8px 12px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">저장</button>
-        ${currentYtId?`<button onclick="clearYtLink('${e.id}')" style="padding:8px 10px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:9px;font-size:13px;cursor:pointer;flex-shrink:0">✕</button>`:''}
+    const ytUrl=e.yt?`https://youtu.be/${e.yt}`:'';
+    return`<div style="padding:14px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;background:var(--pl);color:var(--pd);border-radius:6px;padding:2px 8px;font-weight:600">${ZONE_LABELS[e.zone]||e.zone}</span>
+          ${e.custom?'<span style="font-size:11px;background:var(--gl);color:#0F6E56;border-radius:6px;padding:2px 8px;font-weight:600">내 루틴</span>':''}
+        </div>
+        ${e.custom?`<button onclick="deleteEx('${e.id}')" style="font-size:12px;color:#FF3B30;background:none;border:1px solid #FF3B30;border-radius:7px;padding:3px 9px;cursor:pointer">삭제</button>`:''}
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input id="en-${e.id}" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-weight:600;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)" value="${e.name}" placeholder="운동 이름">
+        <input id="eu-${e.id}" style="width:52px;padding:8px 6px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);text-align:center;color:var(--txt)" value="${e.unit}" placeholder="단위">
+      </div>
+      <div style="display:flex;gap:6px">
+        <input id="ey-${e.id}" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)" value="${ytUrl}" placeholder="유튜브 주소 (선택)">
+        <button onclick="saveEx('${e.id}')" style="padding:8px 14px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">저장</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function saveYtLink(id){
-  const raw=document.getElementById('yt-inp-'+id).value.trim();
-  if(!raw){clearYtLink(id);return;}
-  const m=raw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-  if(m){
-    DB.ytOverrides[id]=m[1];saveDB();
-    renderYtEditList();
-    showBadge('영상 저장됨 ✓');
-  } else {
-    alert('유튜브 주소가 맞지 않아요.\nhttps://youtu.be/... 형태로 복사해주세요.');
+function saveEx(id){
+  const idx=DB.exercises.findIndex(e=>e.id===id);
+  if(idx<0)return;
+  const name=document.getElementById('en-'+id).value.trim();
+  const unit=document.getElementById('eu-'+id).value.trim();
+  const ytRaw=document.getElementById('ey-'+id).value.trim();
+  if(!name){alert('운동 이름을 입력해주세요.');return;}
+  let yt='';
+  if(ytRaw){
+    const m=ytRaw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+    if(m)yt=m[1];
+    else{alert('유튜브 주소 형식이 맞지 않아요.\nhttps://youtu.be/XXXXX 형태로 넣어주세요.');return;}
   }
+  DB.exercises[idx].name=name;
+  DB.exercises[idx].unit=unit||DB.exercises[idx].unit;
+  DB.exercises[idx].yt=yt;
+  saveDB();
+  renderEx();
+  showBadge('저장됨 ✓');
 }
 
-function clearYtLink(id){
-  delete DB.ytOverrides[id];saveDB();
-  renderYtEditList();
+function deleteEx(id){
+  if(!confirm('이 운동을 삭제할까요?'))return;
+  DB.exercises=DB.exercises.filter(e=>e.id!==id);
+  delete DB.exChecked[id];
+  saveDB();renderEx();renderYtEditList();
 }
 
 // ─── 아바타 (설정 탭) ───
@@ -1155,9 +1175,19 @@ function uploadAvatarFromSettings(input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
-    DB.avatar=e.target.result;saveDB();
-    applyAvatar();
-    renderSettings();
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=300;
+      let w=img.width,h=img.height;
+      if(w>max||h>max){const r=Math.min(max/w,max/h);w=Math.round(w*r);h=Math.round(h*r);}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      DB.avatar=canvas.toDataURL('image/jpeg',0.8);
+      saveDB();applyAvatar();renderSettings();
+      showBadge('프로필 사진 저장됨 ✓');
+    };
+    img.src=e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -1168,12 +1198,12 @@ function clearAvatar(){
 
 function applyAvatar(){
   const li=getLv(DB.totalXP);
-  // 홈 탭 아바타
   const av=document.getElementById('avatar-el');
+  if(!av)return;
   if(DB.avatar){
-    av.innerHTML=`<img src="${DB.avatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    av.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
   } else {
-    av.innerHTML=`<span id="avatar-char">${li.char.emoji}</span>`;
+    av.innerHTML=`<span style="font-size:26px">${li.char.emoji}</span>`;
   }
 }
 
