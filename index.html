@@ -350,6 +350,25 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
       </div>
     </div>
   </div>
+
+  <!-- 핵심 미션 편집 -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:0">💎 핵심 미션 편집</div>
+      <button style="font-size:12px;color:var(--txt2);background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer" onclick="resetCores()">기본값 복원</button>
+    </div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6">이름과 설명을 원하는 운동으로 바꿀 수 있어요.</div>
+    <div id="core-edit-list"></div>
+  </div>
+
+  <!-- 보너스 미션 편집 -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:0">⭐ 보너스 미션 편집</div>
+      <button style="font-size:12px;color:var(--txt2);background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer" onclick="resetBonus()">기본값 복원</button>
+    </div>
+    <div id="bonus-edit-list"></div>
+  </div>
   <div class="card">
     <div class="lbl">🎬 운동 편집 (이름 · 유튜브 링크)</div>
     <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6">운동 이름과 유튜브 링크를 직접 바꿀 수 있어요. 저장 버튼을 꼭 눌러주세요.</div>
@@ -497,8 +516,8 @@ const CHARS=[
 
 // DB
 const KEY='3fit_v2';
-function defDB(){return{totalXP:0,todayXP:0,streak:0,lastDate:'',coreChecked:[0,0,0],bonusChecked:[0,0,0],exChecked:{},todos:[],todayMemo:'',history:{},avatar:'',quoteIdx:0,exercises:JSON.parse(JSON.stringify(DEFAULT_EX)),rewards:JSON.parse(JSON.stringify(DEFAULT_RW))};}
-function loadDB(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');const d=defDB();Object.assign(d,s);if(!s.exercises||!s.exercises.length)d.exercises=JSON.parse(JSON.stringify(DEFAULT_EX));if(!s.rewards||!s.rewards.length)d.rewards=JSON.parse(JSON.stringify(DEFAULT_RW));return d;}catch{return defDB();}}
+function defDB(){return{totalXP:0,todayXP:0,streak:0,lastDate:'',coreChecked:[0,0,0],bonusChecked:[0,0,0],exChecked:{},todos:[],todayMemo:'',history:{},avatar:'',quoteIdx:0,exercises:JSON.parse(JSON.stringify(DEFAULT_EX)),rewards:JSON.parse(JSON.stringify(DEFAULT_RW)),cores:JSON.parse(JSON.stringify(CORES)),bonus:JSON.parse(JSON.stringify(BONUS))};}
+function loadDB(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');const d=defDB();Object.assign(d,s);if(!s.exercises||!s.exercises.length)d.exercises=JSON.parse(JSON.stringify(DEFAULT_EX));if(!s.rewards||!s.rewards.length)d.rewards=JSON.parse(JSON.stringify(DEFAULT_RW));if(!s.cores||!s.cores.length)d.cores=JSON.parse(JSON.stringify(CORES));if(!s.bonus||!s.bonus.length)d.bonus=JSON.parse(JSON.stringify(BONUS));return d;}catch{return defDB();}}
 function saveDB(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}}
 let DB=loadDB();
 
@@ -554,7 +573,7 @@ function updateHeader(){
 
 // 핵심 미션
 function renderCore(){
-  document.getElementById('core-list').innerHTML=CORES.map((m,i)=>{
+  document.getElementById('core-list').innerHTML=DB.cores.map((m,i)=>{
     const done=DB.coreChecked[i];
     return`<div class="mitem">
       <div class="cchk ${done?'done':''}" onclick="toggleCore(${i})">${done?'✓':''}</div>
@@ -565,12 +584,13 @@ function renderCore(){
 }
 function toggleCore(i){
   const was=DB.coreChecked[i];
-  if(was){DB.coreChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-CORES[i].xp);DB.todayXP=Math.max(0,DB.todayXP-CORES[i].xp);}
+  const m=DB.cores[i];
+  if(was){DB.coreChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-m.xp);DB.todayXP=Math.max(0,DB.todayXP-m.xp);}
   else{
-    DB.coreChecked[i]=1;DB.totalXP+=CORES[i].xp;DB.todayXP+=CORES[i].xp;
-    spawnP(8);showBadge('+'+CORES[i].xp+' XP');
-    const msg=rnd(CORES[i].msgs);
-    setTimeout(()=>showDonePop(CORES[i].emoji+' '+CORES[i].name,msg,CORES[i].xp),200);
+    DB.coreChecked[i]=1;DB.totalXP+=m.xp;DB.todayXP+=m.xp;
+    spawnP(8);showBadge('+'+m.xp+' XP');
+    const msg=rnd(m.msgs);
+    setTimeout(()=>showDonePop(m.emoji+' '+m.name,msg,m.xp),200);
     const nxt=[...DB.coreChecked];nxt[i]=1;
     if(nxt.every(Boolean)){DB.totalXP+=50;DB.todayXP+=50;saveDB();setTimeout(()=>showFC(),1400);}
   }
@@ -579,7 +599,7 @@ function toggleCore(i){
 
 // 보너스 미션
 function renderBonus(){
-  document.getElementById('bonus-list').innerHTML=BONUS.map((m,i)=>{
+  document.getElementById('bonus-list').innerHTML=DB.bonus.map((m,i)=>{
     const done=DB.bonusChecked[i];
     return`<div class="mitem">
       <div class="bchk ${done?'done':''}" onclick="toggleBonus(${i})">${done?'✓':''}</div>
@@ -590,8 +610,9 @@ function renderBonus(){
 }
 function toggleBonus(i){
   const was=DB.bonusChecked[i];
-  if(was){DB.bonusChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-BONUS[i].xp);DB.todayXP=Math.max(0,DB.todayXP-BONUS[i].xp);}
-  else{DB.bonusChecked[i]=1;DB.totalXP+=BONUS[i].xp;DB.todayXP+=BONUS[i].xp;spawnP(6);showBadge('+'+BONUS[i].xp+' XP');setTimeout(()=>showDonePop(BONUS[i].emoji+' '+BONUS[i].name,rnd(BONUS[i].msgs),BONUS[i].xp),200);}
+  const m=DB.bonus[i];
+  if(was){DB.bonusChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-m.xp);DB.todayXP=Math.max(0,DB.todayXP-m.xp);}
+  else{DB.bonusChecked[i]=1;DB.totalXP+=m.xp;DB.todayXP+=m.xp;spawnP(6);showBadge('+'+m.xp+' XP');setTimeout(()=>showDonePop(m.emoji+' '+m.name,rnd(m.msgs),m.xp),200);}
   saveDB();renderBonus();updateHeader();updateStats();
 }
 
@@ -738,6 +759,8 @@ function renderRw(){
 const ZNLBL={challenge:'챌린지',stretch:'스트레칭',upper:'상체',core:'허리·코어',lower:'하체'};
 function renderSettings(){
   applyAvatarAll();
+  renderCoreMissionEdit();
+  renderBonusMissionEdit();
   document.getElementById('exeditlist').innerHTML=DB.exercises.map((e,i)=>{
     const ytUrl=e.yt?`https://youtu.be/${e.yt}`:'';
     return`<div class="exedit">
@@ -752,6 +775,74 @@ function renderSettings(){
       </div>
     </div>`;
   }).join('');
+}
+
+function renderCoreMissionEdit(){
+  const el=document.getElementById('core-edit-list');
+  if(!el)return;
+  el.innerHTML=DB.cores.map((m,i)=>`
+    <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">미션 ${i+1}</div>
+      <div style="display:flex;gap:6px;margin-bottom:6px">
+        <input style="width:48px;padding:8px 4px;border:1.5px solid var(--border);border-radius:9px;font-size:18px;text-align:center;font-family:inherit;outline:none;background:var(--bg)"
+          id="ce-emoji-${i}" value="${m.emoji}" placeholder="💪">
+        <input style="flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)"
+          id="ce-name-${i}" value="${m.name}" placeholder="미션 이름">
+      </div>
+      <div style="display:flex;gap:6px">
+        <input style="flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt2)"
+          id="ce-desc-${i}" value="${m.desc}" placeholder="설명 (예: 푸쉬업 or 턱걸이)">
+        <button class="exsavebtn" onclick="saveCoreMission(${i})">저장</button>
+      </div>
+    </div>`).join('');
+}
+
+function saveCoreMission(i){
+  const emoji=document.getElementById('ce-emoji-'+i).value.trim()||DB.cores[i].emoji;
+  const name=document.getElementById('ce-name-'+i).value.trim();
+  const desc=document.getElementById('ce-desc-'+i).value.trim();
+  if(!name){alert('미션 이름을 입력해주세요.');return;}
+  DB.cores[i].emoji=emoji;
+  DB.cores[i].name=name;
+  DB.cores[i].desc=desc;
+  saveDB();renderCore();showBadge('핵심 미션 저장됨 ✓');
+}
+
+function resetCores(){
+  if(!confirm('핵심 미션을 기본값으로 되돌릴까요?'))return;
+  DB.cores=JSON.parse(JSON.stringify(CORES));
+  saveDB();renderCore();renderCoreMissionEdit();showBadge('기본값으로 복원됨');
+}
+
+function renderBonusMissionEdit(){
+  const el=document.getElementById('bonus-edit-list');
+  if(!el)return;
+  el.innerHTML=DB.bonus.map((m,i)=>`
+    <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+      <div style="font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:8px">보너스 미션 ${i+1}</div>
+      <div style="display:flex;gap:6px">
+        <input style="width:48px;padding:8px 4px;border:1.5px solid var(--border);border-radius:9px;font-size:18px;text-align:center;font-family:inherit;outline:none;background:var(--bg)"
+          id="be-emoji-${i}" value="${m.emoji}" placeholder="🚶">
+        <input style="flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)"
+          id="be-name-${i}" value="${m.name}" placeholder="보너스 미션 이름">
+        <button class="exsavebtn" onclick="saveBonusMission(${i})">저장</button>
+      </div>
+    </div>`).join('');
+}
+
+function saveBonusMission(i){
+  const emoji=document.getElementById('be-emoji-'+i).value.trim()||DB.bonus[i].emoji;
+  const name=document.getElementById('be-name-'+i).value.trim();
+  if(!name){alert('미션 이름을 입력해주세요.');return;}
+  DB.bonus[i].emoji=emoji;
+  DB.bonus[i].name=name;
+  saveDB();renderBonus();showBadge('보너스 미션 저장됨 ✓');
+}
+
+function resetBonus(){
+  if(!confirm('보너스 미션을 기본값으로 되돌릴까요?'))return;
+  DB.bonus=JSON.parse(JSON.stringify(BONUS));
+  saveDB();renderBonus();renderBonusMissionEdit();showBadge('기본값으로 복원됨');
 }
 function saveExEdit(id){
   const idx=DB.exercises.findIndex(e=>e.id===id);if(idx<0)return;
