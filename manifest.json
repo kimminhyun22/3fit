@@ -1,0 +1,25 @@
+{
+  "name": "3FIT",
+  "short_name": "3FIT",
+  "description": "3가지 운동 · 3분 · 매일 — 홈트 루틴 코치",
+  "start_url": "/3fit/",
+  "scope": "/3fit/",
+  "display": "standalone",
+  "background_color": "#F5F5F7",
+  "theme_color": "#F5F5F7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

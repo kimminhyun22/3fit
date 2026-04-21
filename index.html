@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F5F5F7">
+<title>3FIT</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --p:#2D8CFF;--pl:#E8F1FF;--pm:#9EC4FF;--pd:#1A5BBF;
+  --g:#30D158;--gl:#E3F9EC;
+  --a:#FF9F0A;--al:#FFF3DC;
+  --bg:#F5F5F7;--card:#FFFFFF;--dark:#1C1C1E;
+  --txt:#1D1D1F;--txt2:#6E6E73;--txt3:#AEAEB2;
+  --border:#E5E5EA;--r:18px;--sh:0 1px 4px rgba(0,0,0,.07);
+  --tab-h:68px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);color:var(--txt);max-width:480px;margin:0 auto;position:relative;}
+
+/* ─── 페이지 ─── */
+.page{display:none;flex-direction:column;height:calc(100vh - var(--tab-h));overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px;}
+.page.active{display:flex;}
+
+/* ─── 카드 ─── */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin:0 14px 11px;}
+.card-title{font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
+
+/* ─── 격언 ─── */
+.quote-card{background:var(--dark);border-radius:var(--r);padding:18px 48px 18px 20px;margin:8px 14px 11px;position:relative;overflow:hidden;cursor:pointer;}
+.quote-card::before{content:'"';position:absolute;top:-12px;left:8px;font-size:90px;color:rgba(255,255,255,.05);font-family:Georgia,serif;line-height:1;}
+.quote-txt{font-size:15px;font-weight:500;color:#fff;line-height:1.65;}
+.quote-src{font-size:11px;color:rgba(255,255,255,.45);margin-top:6px;}
+.quote-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;font-size:15px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+
+/* ─── 헤더 카드 ─── */
+.header-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin:0 14px 11px;display:flex;align-items:center;gap:14px;}
+.avatar-wrap{position:relative;cursor:pointer;flex-shrink:0;}
+.avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.avatar-input{display:none;}
+.ring-outer{position:absolute;inset:-3px;border-radius:50%;}
+.header-info{flex:1;min-width:0;}
+.header-lv{font-size:13px;font-weight:700;color:var(--p);display:flex;align-items:center;gap:6px;}
+.header-lv-chip{background:var(--pl);color:var(--pd);border-radius:20px;padding:2px 9px;font-size:12px;font-weight:700;}
+.header-name{font-size:19px;font-weight:700;margin:2px 0;}
+.xp-row{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:6px 0 3px;}
+.xp-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;margin-top:4px;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:10px;transition:width .55s cubic-bezier(.34,1.56,.64,1);}
+.ring-svg{flex-shrink:0;}
+
+/* ─── 콤보 배너 ─── */
+.combo-banner{margin:0 14px 11px;background:linear-gradient(135deg,#6B63D4,#4A42AA);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;color:#fff;}
+.combo-main{font-size:15px;font-weight:700;}
+.combo-sub{font-size:12px;opacity:.75;margin-top:2px;}
+.combo-badge{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 12px;font-size:20px;font-weight:800;}
+
+/* ─── 부위 탭 ─── */
+.zone-tabs{display:flex;gap:7px;padding:0 14px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;}
+.zone-tabs::-webkit-scrollbar{display:none;}
+.ztab{flex-shrink:0;padding:7px 15px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.ztab.on{background:var(--dark);color:#fff;border-color:var(--dark);}
+
+/* ─── 카테고리 탭 ─── */
+.cat-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.ctab{flex:1;text-align:center;padding:7px 2px;border-radius:10px;border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .2s;}
+.ctab.on{background:var(--p);color:#fff;border-color:var(--p);}
+
+/* ─── 운동 아이템 ─── */
+.ex-item{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--border);}
+.ex-item:last-child{border-bottom:none;padding-bottom:0;}
+.ex-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:12px;color:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+.ex-chk.done{background:var(--g);border-color:var(--g);color:#fff;transform:scale(1.1);}
+.ex-info{flex:1;min-width:0;}
+.ex-name{font-size:15px;font-weight:600;}
+.ex-name.done{text-decoration:line-through;color:var(--txt3);}
+.ex-desc{font-size:11px;color:var(--txt2);margin-top:1px;}
+.ex-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ex-input-wrap{display:flex;align-items:center;gap:3px;}
+.ex-inp{width:46px;height:30px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:13px;font-weight:600;background:var(--bg);outline:none;font-family:inherit;}
+.ex-inp:focus{border-color:var(--p);}
+.ex-unit{font-size:11px;color:var(--txt2);}
+.yt-btn{width:30px;height:30px;border-radius:8px;background:#FF3B30;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.yt-btn svg{width:13px;height:13px;fill:#fff;}
+.ex-coin{font-size:11px;font-weight:700;color:var(--a);background:var(--al);padding:3px 7px;border-radius:6px;}
+
+/* ─── 보너스 미션 ─── */
+.bonus-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--g);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:12px;color:transparent;transition:all .25s;}
+.bonus-chk.done{background:var(--g);border-color:var(--g);color:#fff;}
+
+/* ─── To-do ─── */
+.todo-divider{border:none;border-top:1px dashed var(--border);margin:10px 0;}
+.todo-input-row{display:flex;gap:8px;margin-bottom:8px;}
+.todo-input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:inherit;background:var(--bg);}
+.todo-input:focus{border-color:var(--p);}
+.todo-add-btn{padding:8px 14px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
+.todo-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.todo-item:last-child{border-bottom:none;}
+.todo-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:10px;color:transparent;transition:all .2s;}
+.todo-chk.done{background:var(--g);border-color:var(--g);color:#fff;}
+.todo-txt{flex:1;font-size:14px;}
+.todo-txt.done{text-decoration:line-through;color:var(--txt3);}
+.todo-del{background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer;padding:0 2px;line-height:1;}
+.todo-clean{font-size:12px;color:var(--txt2);background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;margin-top:8px;}
+
+/* ─── 오늘 스탯 ─── */
+.stat3{display:flex;gap:8px;}
+.stat3-item{flex:1;background:var(--bg);border-radius:12px;padding:12px;text-align:center;}
+.stat3-val{font-size:22px;font-weight:700;}
+.stat3-lbl{font-size:10px;color:var(--txt2);margin-top:2px;}
+
+/* ─── 스트릭 ─── */
+.streak-row{display:flex;gap:5px;position:relative;}
+.s-dot{flex:1;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:var(--bg);color:var(--txt3);flex-direction:column;gap:1px;}
+.s-dot .s-lbl{font-size:9px;}
+.s-dot.done{background:linear-gradient(135deg,var(--p),var(--g));color:#fff;}
+.s-dot.today{background:var(--pl);border:1.5px solid var(--p);color:var(--pd);}
+.streak-count{font-size:12px;font-weight:700;color:var(--p);text-align:right;margin-top:6px;}
+
+/* ─── 메모 카드 ─── */
+.memo-card{background:var(--pl);border-radius:var(--r);padding:14px 16px;margin-top:10px;}
+.memo-card-title{font-size:11px;font-weight:600;color:var(--pd);margin-bottom:6px;}
+.memo-content{font-size:14px;color:var(--txt);line-height:1.6;}
+.memo-edit-btn{font-size:12px;color:var(--p);background:none;border:none;cursor:pointer;margin-top:6px;padding:0;}
+
+/* ─── 캘린더 페이지 ─── */
+.cal-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-nav-btn{background:none;border:none;font-size:20px;color:var(--p);cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.cal-month-lbl{font-size:17px;font-weight:700;}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+.cal-dow-cell{text-align:center;font-size:10px;font-weight:600;color:var(--txt2);padding-bottom:4px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-cell{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;transition:all .15s;flex-direction:column;gap:1px;}
+.cal-cell.empty{pointer-events:none;}
+.cal-cell.today{background:var(--p);color:#fff;font-weight:700;}
+.cal-cell.full{background:var(--g);color:#fff;}
+.cal-cell.full.combo{outline:2px solid var(--p);outline-offset:1px;}
+.cal-cell.partial{background:var(--gl);color:#1a6632;}
+.cal-cell .cal-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.7);}
+.cal-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.cal-stat-item{background:var(--bg);border-radius:12px;padding:12px;text-align:center;}
+.cal-stat-val{font-size:20px;font-weight:700;}
+.cal-stat-lbl{font-size:10px;color:var(--txt2);margin-top:2px;}
+.cal-legend{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--txt2);}
+.leg-dot{width:10px;height:10px;border-radius:3px;}
+
+/* ─── 성장 탭 ─── */
+.char-hero{background:var(--dark);border-radius:var(--r);padding:24px 20px;margin:8px 14px 11px;text-align:center;color:#fff;}
+.char-emoji{font-size:60px;margin-bottom:8px;}
+.char-name{font-size:20px;font-weight:700;}
+.char-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;}
+.char-xp-bar{height:6px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-top:14px;}
+.char-xp-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:10px;transition:width .6s ease;}
+.char-xp-txt{font-size:12px;color:rgba(255,255,255,.55);margin-top:6px;}
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.char-stage{background:var(--bg);border-radius:12px;padding:12px;text-align:center;transition:all .2s;}
+.char-stage.current{background:var(--pl);border:2px solid var(--p);}
+.char-stage-emoji{font-size:26px;margin-bottom:4px;}
+.char-stage-name{font-size:12px;font-weight:700;color:var(--txt);}
+.char-stage-lv{font-size:10px;color:var(--txt2);margin-top:2px;}
+.reward-item{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--border);}
+.reward-item:last-child{border-bottom:none;}
+.reward-lv{font-size:12px;font-weight:700;color:var(--pd);background:var(--pl);padding:3px 8px;border-radius:8px;flex-shrink:0;min-width:44px;text-align:center;}
+.reward-name{flex:1;font-size:14px;font-weight:600;}
+.reward-msg{font-size:11px;color:var(--txt2);margin-top:2px;}
+.reward-status{font-size:13px;flex-shrink:0;}
+.reward-edit-btn{font-size:12px;color:var(--p);background:none;border:none;cursor:pointer;}
+
+/* ─── 유튜브 모달 ─── */
+.yt-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.yt-modal.show{display:flex;}
+.yt-modal-inner{width:100%;max-width:480px;background:#000;border-radius:16px;overflow:hidden;}
+.yt-modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#111;}
+.yt-modal-title{font-size:14px;font-weight:600;color:#fff;flex:1;margin-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.yt-close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.yt-frame-wrap{position:relative;width:100%;padding-bottom:56.25%;}
+.yt-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+
+/* ─── 팝업 ─── */
+.pop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.pop-overlay.show{display:flex;}
+.pop{background:var(--card);border-radius:24px;padding:28px 22px;width:min(320px,90vw);text-align:center;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+.pop-emoji{font-size:52px;margin-bottom:10px;}
+.pop-title{font-size:20px;font-weight:700;margin-bottom:6px;}
+.pop-msg{font-size:14px;color:var(--txt2);line-height:1.6;}
+.pop-coin{font-size:24px;font-weight:800;color:var(--a);margin:12px 0;}
+.pop-btn{width:100%;padding:14px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;}
+.pop-btn-outline{width:100%;padding:12px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;}
+
+/* ─── 메모 모달 ─── */
+.memo-modal-content{text-align:left;}
+.memo-modal-date{font-size:13px;color:var(--txt2);margin-bottom:10px;}
+.memo-textarea{width:100%;min-height:110px;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;resize:none;line-height:1.6;}
+.memo-textarea:focus{border-color:var(--p);}
+
+/* ─── 파티클 ─── */
+.particle{position:fixed;pointer-events:none;z-index:300;font-size:18px;animation:fly 1.2s ease-out forwards;}
+@keyframes fly{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-120px) scale(.4);}}
+.badge-txt{position:fixed;pointer-events:none;z-index:300;font-size:14px;font-weight:700;animation:badge .3s ease-in forwards;animation-delay:.1s;opacity:0;}
+@keyframes badge{0%{opacity:0;transform:translateY(10px);}20%{opacity:1;transform:translateY(0);}80%{opacity:1;}100%{opacity:0;}}
+
+/* ─── 탭바 ─── */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:var(--tab-h);background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;}
+.tab-ico{font-size:22px;}
+.tab-lbl{font-size:10px;font-weight:600;color:var(--txt2);}
+.tab.on .tab-lbl{color:var(--p);}
+
+/* ─── 루틴 추가 팝업 ─── */
+.form-pop{background:var(--card);border-radius:24px;padding:24px 20px;width:min(340px,92vw);text-align:left;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+.form-pop-title{font-size:18px;font-weight:700;margin-bottom:16px;}
+.form-field{margin-bottom:10px;}
+.form-label{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:4px;}
+.form-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;}
+.form-input:focus{border-color:var(--p);}
+.form-row{display:flex;gap:8px;margin-top:4px;}
+.form-btn{flex:1;padding:12px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;}
+.form-btn.cancel{background:transparent;border:1.5px solid var(--border);color:var(--txt2);}
+.form-btn.save{background:var(--dark);border:none;color:#fff;}
+.add-routine-btn{width:100%;padding:13px;border:2px dashed var(--border);border-radius:var(--r);background:transparent;font-size:14px;font-weight:600;color:var(--txt2);cursor:pointer;margin-top:6px;transition:all .2s;}
+.add-routine-btn:hover{border-color:var(--p);color:var(--p);}
+</style>
+</head>
+<body>
+
+<!-- ═══ 홈 탭 ═══ -->
+<div class="page active" id="pg-home">
+
+  <!-- 격언 -->
+  <div class="quote-card" onclick="nextQuote()">
+    <button class="quote-btn" onclick="event.stopPropagation();nextQuote()">↻</button>
+    <div class="quote-txt" id="quote-txt"></div>
+    <div class="quote-src" id="quote-src"></div>
+  </div>
+
+  <!-- 콤보 배너 (조건부) -->
+  <div class="combo-banner" id="combo-banner" style="display:none">
+    <div><div class="combo-main" id="combo-main"></div><div class="combo-sub" id="combo-sub"></div></div>
+    <div class="combo-badge" id="combo-badge">🔥</div>
+  </div>
+
+  <!-- 헤더 카드: 프로필·레벨·XP·이행률 링 -->
+  <div class="header-card">
+    <div class="avatar-wrap" onclick="document.getElementById('avatar-input').click()">
+      <div class="avatar" id="avatar-el"><span id="avatar-char">🌱</span></div>
+      <input type="file" accept="image/*" class="avatar-input" id="avatar-input" onchange="uploadAvatar(this)">
+    </div>
+    <div class="header-info">
+      <div class="header-lv"><span class="header-lv-chip" id="lv-chip">🌱 Lv.1 씨앗</span></div>
+      <div class="header-name">3FIT 유저</div>
+      <div class="xp-row" style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:5px;">
+        <span id="xp-cur-lbl">0 XP</span><span id="xp-need-lbl">다음 레벨까지 100 XP</span>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    </div>
+    <!-- 이행률 링 -->
+    <svg class="ring-svg" width="56" height="56" viewBox="0 0 56 56">
+      <circle fill="none" stroke="#E5E5EA" stroke-width="5" cx="28" cy="28" r="22"/>
+      <circle id="ring-fg" fill="none" stroke="#30D158" stroke-width="5" stroke-linecap="round"
+        cx="28" cy="28" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"
+        transform="rotate(-90 28 28)" style="transition:stroke-dashoffset .55s cubic-bezier(.34,1.56,.64,1)"/>
+    </svg>
+  </div>
+
+  <!-- 핵심 3 미션 -->
+  <div class="card">
+    <div class="card-title">💎 핵심 3 미션</div>
+    <div id="core-list"></div>
+  </div>
+
+  <!-- 보너스 미션 + To-do -->
+  <div class="card">
+    <div class="card-title">⭐ 보너스 미션</div>
+    <div id="bonus-list"></div>
+    <hr class="todo-divider">
+    <div class="card-title" style="margin-bottom:10px">📝 오늘 할 일</div>
+    <div class="todo-input-row">
+      <input class="todo-input" id="todo-input" placeholder="할 일 입력..." onkeydown="if(event.key==='Enter')addTodo()">
+      <button class="todo-add-btn" onclick="addTodo()">추가</button>
+    </div>
+    <div id="todo-list"></div>
+    <button class="todo-clean" id="todo-clean" onclick="cleanTodos()" style="display:none">완료 정리</button>
+  </div>
+
+  <!-- 오늘 스탯 -->
+  <div class="card">
+    <div class="card-title">📊 오늘 스탯</div>
+    <div class="stat3">
+      <div class="stat3-item"><div class="stat3-val" id="stat-xp">0</div><div class="stat3-lbl">오늘 XP</div></div>
+      <div class="stat3-item"><div class="stat3-val" id="stat-core">0/3</div><div class="stat3-lbl">핵심 달성</div></div>
+      <div class="stat3-item"><div class="stat3-val" id="stat-todo">0</div><div class="stat3-lbl">할 일 완료</div></div>
+    </div>
+  </div>
+
+  <!-- 이번 주 스트릭 -->
+  <div class="card">
+    <div class="card-title">🔥 이번 주 스트릭</div>
+    <div class="streak-row" id="streak-row"></div>
+    <div class="streak-count" id="streak-count"></div>
+  </div>
+
+  <!-- 부위별 운동 -->
+  <div class="zone-tabs" id="zone-tabs">
+    <div class="ztab on" onclick="setZone('all',this)">전체</div>
+    <div class="ztab" onclick="setZone('upper',this)">상체 💪</div>
+    <div class="ztab" onclick="setZone('core',this)">코어 🔄</div>
+    <div class="ztab" onclick="setZone('lower',this)">하체 🦵</div>
+    <div class="ztab" onclick="setZone('cardio',this)">유산소 ❤️</div>
+    <div class="ztab" onclick="setZone('stretch',this)">스트레칭 🧘</div>
+  </div>
+
+  <div class="card">
+    <div class="cat-tabs">
+      <div class="ctab on" onclick="setCat('strength',this)">근력</div>
+      <div class="ctab" onclick="setCat('cardio',this)">유산소</div>
+      <div class="ctab" onclick="setCat('stretch',this)">스트레칭</div>
+      <div class="ctab" onclick="setCat('my',this)">내 루틴</div>
+    </div>
+    <div id="ex-list"></div>
+    <button class="add-routine-btn" onclick="showAddForm()">＋ 내 루틴 추가</button>
+  </div>
+
+  <!-- 오늘 메모 -->
+  <div class="card" id="memo-card-wrap" style="display:none">
+    <div class="card-title">✏️ 오늘의 메모</div>
+    <div class="memo-card">
+      <div class="memo-content" id="memo-display"></div>
+      <button class="memo-edit-btn" onclick="openMemoModal()">수정하기</button>
+    </div>
+  </div>
+
+</div><!-- /pg-home -->
+
+<!-- ═══ 캘린더 탭 ═══ -->
+<div class="page" id="pg-cal">
+  <div class="card" style="margin-top:8px">
+    <div class="cal-nav-row">
+      <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
+      <div class="cal-month-lbl" id="cal-month-lbl"></div>
+      <button class="cal-nav-btn" onclick="calMove(1)">›</button>
+    </div>
+    <div class="cal-dow" id="cal-dow"></div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--gl)"></div>부분 달성</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--g)"></div>풀콤보</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--g);outline:2px solid var(--p);outline-offset:1px;border-radius:3px"></div>콤보 보너스</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 이달 통계</div>
+    <div class="cal-stat-grid" id="cal-stats"></div>
+  </div>
+</div>
+
+<!-- ═══ 성장 탭 ═══ -->
+<div class="page" id="pg-growth">
+  <!-- 캐릭터 현황 -->
+  <div class="char-hero">
+    <div class="char-emoji" id="char-emoji">🌱</div>
+    <div class="char-name" id="char-name">씨앗</div>
+    <div class="char-sub" id="char-sub">첫 발걸음을 내딛는 중</div>
+    <div class="char-xp-bar"><div class="char-xp-fill" id="char-xp-fill" style="width:0%"></div></div>
+    <div class="char-xp-txt" id="char-xp-txt"></div>
+  </div>
+  <!-- 캐릭터 단계 그리드 -->
+  <div class="card">
+    <div class="card-title">🎮 캐릭터 성장 단계</div>
+    <div class="char-grid" id="char-grid"></div>
+  </div>
+  <!-- 보상 로드맵 -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:0">🎁 보상 로드맵</div>
+      <button class="reward-edit-btn" id="reward-edit-btn" onclick="toggleRewardEdit()">편집</button>
+    </div>
+    <div id="reward-list"></div>
+  </div>
+</div>
+
+<!-- ═══ 탭바 ═══ -->
+<nav class="tabbar">
+  <div class="tab on" onclick="goPage('home',this)"><div class="tab-ico">🏠</div><div class="tab-lbl">오늘</div></div>
+  <div class="tab" onclick="goPage('cal',this)"><div class="tab-ico">📅</div><div class="tab-lbl">캘린더</div></div>
+  <div class="tab" onclick="goPage('growth',this)"><div class="tab-ico">🌱</div><div class="tab-lbl">성장</div></div>
+</nav>
+
+<!-- ═══ 유튜브 모달 ═══ -->
+<div class="yt-modal" id="yt-modal">
+  <div class="yt-modal-inner" style="width:min(480px,100vw)">
+    <div class="yt-modal-header">
+      <div class="yt-modal-title" id="yt-modal-title">운동 영상</div>
+      <button class="yt-close-btn" onclick="closeYT()">✕</button>
+    </div>
+    <div class="yt-frame-wrap">
+      <iframe id="yt-frame" src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 완료 팝업 ═══ -->
+<div class="pop-overlay" id="pop-done">
+  <div class="pop">
+    <div class="pop-emoji" id="pop-emoji">🎉</div>
+    <div class="pop-title" id="pop-title">완료!</div>
+    <div class="pop-msg" id="pop-msg"></div>
+    <div class="pop-coin" id="pop-coin">+10 XP</div>
+    <button class="pop-btn" onclick="closePop('pop-done')">계속하기</button>
+  </div>
+</div>
+
+<!-- ═══ 풀콤보 팝업 ═══ -->
+<div class="pop-overlay" id="pop-fullcombo">
+  <div class="pop">
+    <div class="pop-emoji">🏆</div>
+    <div class="pop-title" id="fc-title">풀콤보!</div>
+    <div class="pop-msg" id="fc-msg"></div>
+    <div class="pop-coin" id="fc-coin">+50 XP 보너스</div>
+    <button class="pop-btn" onclick="closePop('pop-fullcombo');openMemoModal()">오늘 메모 남기기</button>
+    <button class="pop-btn-outline" onclick="closePop('pop-fullcombo')">나중에</button>
+  </div>
+</div>
+
+<!-- ═══ 메모 모달 ═══ -->
+<div class="pop-overlay" id="pop-memo">
+  <div class="pop" style="text-align:left">
+    <div class="pop-title" style="margin-bottom:4px">✏️ 오늘의 메모</div>
+    <div class="memo-modal-date" id="memo-date"></div>
+    <textarea class="memo-textarea" id="memo-textarea" placeholder="오늘 하루를 기록해보세요..."></textarea>
+    <button class="pop-btn" onclick="saveMemo()" style="margin-top:12px">저장</button>
+    <button class="pop-btn-outline" onclick="closePop('pop-memo')">닫기</button>
+  </div>
+</div>
+
+<!-- ═══ 루틴 추가 팝업 ═══ -->
+<div class="pop-overlay" id="pop-add">
+  <div class="form-pop">
+    <div class="form-pop-title">➕ 내 루틴 추가</div>
+    <div class="form-field"><div class="form-label">운동 이름</div><input class="form-input" id="f-name" placeholder="예: 플랭크"></div>
+    <div class="form-field"><div class="form-label">부위</div>
+      <select class="form-input" id="f-zone">
+        <option value="upper">상체</option><option value="core">코어</option>
+        <option value="lower">하체</option><option value="cardio">유산소</option><option value="stretch">스트레칭</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div class="form-field" style="flex:1"><div class="form-label">단위</div><input class="form-input" id="f-unit" placeholder="회, 초, 분"></div>
+      <div class="form-field" style="flex:1"><div class="form-label">XP</div><input class="form-input" id="f-coin" type="number" placeholder="10" value="10"></div>
+    </div>
+    <div class="form-field"><div class="form-label">유튜브 링크 (선택)</div><input class="form-input" id="f-yt" placeholder="https://youtu.be/..."></div>
+    <div class="form-row">
+      <button class="form-btn cancel" onclick="closePop('pop-add')">취소</button>
+      <button class="form-btn save" onclick="saveCustomEx()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  데이터 상수
+// ═══════════════════════════════════════════════════════════
+const QUOTES=[
+  {t:"시작이 반이다.",s:"아리스토텔레스"},
+  {t:"한 번에 한 걸음씩. 결국 정상에 선다.",s:"노자"},
+  {t:"고통은 지나가지만, 포기는 영원히 남는다.",s:"랜스 암스트롱"},
+  {t:"몸이 건강해야 정신도 건강하다.",s:"유베날리스"},
+  {t:"지금 게으른 자는 내일 더 힘들다.",s:"히포크라테스"},
+  {t:"완벽하지 않아도 좋다. 꾸준함이 이긴다.",s:"워런 버핏"},
+  {t:"작은 습관이 큰 변화를 만든다.",s:"제임스 클리어"},
+  {t:"움직임이 곧 약이다.",s:"히포크라테스"},
+  {t:"오늘 할 수 있는 일을 내일로 미루지 마라.",s:"벤자민 프랭클린"},
+  {t:"성공은 매일 반복하는 작은 노력의 합이다.",s:"로버트 콜리어"},
+  {t:"땀 한 방울이 자신감 한 방울이다.",s:"무명"},
+  {t:"몸을 단련하면 의지도 함께 단련된다.",s:"니체"},
+  {t:"최고의 운동은 지금 하는 운동이다.",s:"무명"},
+  {t:"규칙이 자유를 만든다.",s:"스티브 잡스"},
+  {t:"매일 조금씩, 결국 멀리.",s:"공자"},
+  {t:"몸은 거짓말하지 않는다.",s:"마사 그래험"},
+  {t:"꾸준함 앞에 재능은 없다.",s:"무명"},
+  {t:"어제의 나를 오늘 이겨라.",s:"무명"},
+  {t:"한 번 더, 딱 한 번 더.",s:"아놀드 슈워제네거"},
+  {t:"3분 투자, 하루 보상.",s:"3FIT"},
+  {t:"성공한 사람들은 기분이 좋을 때만 하지 않는다.",s:"무명"},
+  {t:"포기할 이유보다 계속할 이유가 더 많다.",s:"무명"},
+  {t:"당신이 쉬는 사이 누군가는 훈련한다.",s:"무명"},
+  {t:"몸을 바꾸기 전에 마음을 바꿔라.",s:"무명"},
+  {t:"루틴이 곧 삶이다.",s:"무명"},
+  {t:"3가지만. 오늘도 충분히 훌륭하다.",s:"3FIT"},
+  {t:"근육은 기억한다. 꾸준히 새겨라.",s:"무명"},
+  {t:"오늘의 루틴이 내일의 실력이다.",s:"무명"},
+  {t:"작게 시작해도 된다. 멈추지만 마라.",s:"무명"},
+  {t:"습관은 만들어지는 것이 아니라 쌓이는 것.",s:"무명"},
+];
+
+const CORE_MISSIONS=[
+  {id:'c1',emoji:'💪',name:'상체 운동 3분',desc:'푸쉬업 or 턱걸이',xp:30,msgs:['상체가 단단해지고 있어요 💪','뛰어난 집중력이에요! 어깨가 넓어지는 소리가 들려요','오늘도 상체 루틴 클리어! 💎']},
+  {id:'c2',emoji:'🔄',name:'코어 & 하체 3분',desc:'플랭크 or 스쿼트',xp:30,msgs:['코어가 불타고 있어요 🔥','기초가 탄탄해지고 있어요! 대단해요','하체 루틴 완료! 뿌듯하죠? ⚡']},
+  {id:'c3',emoji:'❤️',name:'유산소 & 스트레칭',desc:'제자리뛰기 or 스트레칭',xp:30,msgs:['심폐가 강해지고 있어요 ❤️','몸이 유연해지는 중이에요! 멋져요','마무리까지 완벽해요 🌟']},
+];
+
+const BONUS_MISSIONS=[
+  {id:'b1',emoji:'🚶',name:'산책 or 걷기 10분',xp:15,msgs:['걷기만 해도 충분해요 🚶','자연 속 운동, 최고예요!','오늘 걷기 완료!']},
+  {id:'b2',emoji:'💧',name:'물 2L & 수면 7시간',xp:15,msgs:['몸이 촉촉해지고 있어요 💧','수분 보충 완벽해요!','건강 루틴 달성!']},
+  {id:'b3',emoji:'🧘',name:'명상 or 호흡 3분',xp:15,msgs:['마음이 고요해지고 있어요 🧘','정신 건강도 중요해요!','몸과 마음 모두 케어 완료!']},
+];
+
+const EXERCISES=[
+  {id:'e1',name:'턱걸이',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'dQw4w9WgXcQ',desc:'등·이두 강화'},
+  {id:'e2',name:'푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'IODxDxX7oi4',desc:'가슴·삼두 강화'},
+  {id:'e3',name:'파이크 푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:7,yt:'sposDXWEB0A',desc:'어깨 강화'},
+  {id:'e4',name:'딥스',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'2z8JmcrW-As',desc:'삼두·가슴 하부'},
+  {id:'e5',name:'플랭크',zone:'core',cat:'strength',unit:'초',xp:7,yt:'pSHjTRCQxIw',desc:'코어 전체 강화'},
+  {id:'e6',name:'크런치',zone:'core',cat:'strength',unit:'회',xp:5,yt:'Xyd_fa5zoEU',desc:'복근 상부'},
+  {id:'e7',name:'레그레이즈',zone:'core',cat:'strength',unit:'회',xp:6,yt:'l4kQd9eWclE',desc:'복근 하부'},
+  {id:'e8',name:'슈퍼맨',zone:'core',cat:'strength',unit:'회',xp:5,yt:'cc6UVRS7PW4',desc:'허리 근육 강화'},
+  {id:'e9',name:'스쿼트',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'aclHkVaku9U',desc:'허벅지·엉덩이'},
+  {id:'e10',name:'런지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'QOVaHwm-Q6U',desc:'다리 균형 강화'},
+  {id:'e11',name:'힙브릿지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'8bbE64NuDTU',desc:'엉덩이·햄스트링'},
+  {id:'e12',name:'카프레이즈',zone:'lower',cat:'strength',unit:'회',xp:4,yt:'gwLzBJYoWlI',desc:'종아리 강화'},
+  {id:'e13',name:'제자리 뛰기',zone:'cardio',cat:'cardio',unit:'분',xp:8,yt:'oCMh_lU4ER8',desc:'심폐 강화'},
+  {id:'e14',name:'버피',zone:'cardio',cat:'cardio',unit:'회',xp:10,yt:'dZgVxmf6jkA',desc:'전신 유산소'},
+  {id:'e15',name:'점핑잭',zone:'cardio',cat:'cardio',unit:'회',xp:6,yt:'CWpmIW6l-YA',desc:'워밍업·유산소'},
+  {id:'e16',name:'마운틴클라이머',zone:'cardio',cat:'cardio',unit:'회',xp:8,yt:'nmwgirgXLYM',desc:'코어+유산소'},
+  {id:'e17',name:'고양이소 자세',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'kqnua4rHVVA',desc:'척추 이완'},
+  {id:'e18',name:'햄스트링 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'WxbMVFOoMoA',desc:'허벅지 뒤쪽'},
+  {id:'e19',name:'어깨 돌리기',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'g_NxHzAnFOE',desc:'어깨 이완'},
+  {id:'e20',name:'목 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'',desc:'목·어깨 이완'},
+];
+
+const CHARS=[
+  {emoji:'🌱',name:'씨앗',sub:'첫 발걸음을 내딛는 중',lvMin:1,lvMax:9},
+  {emoji:'🌿',name:'새싹',sub:'성장이 눈에 보이기 시작',lvMin:10,lvMax:24},
+  {emoji:'🌳',name:'나무',sub:'단단한 루틴이 자리잡다',lvMin:25,lvMax:49},
+  {emoji:'⚡',name:'번개',sub:'행동이 습관이 된 사람',lvMin:50,lvMax:74},
+  {emoji:'🔥',name:'불꽃',sub:'멈출 수 없는 에너지',lvMin:75,lvMax:99},
+  {emoji:'👑',name:'레전드',sub:'육체와 정신 모두 정복',lvMin:100,lvMax:999},
+];
+
+const FC_MSGS=[
+  '오늘 3개 봉우리 정복 완료! 👑',
+  '완벽한 하루예요! 당신은 챔피언 🏆',
+  '3FIT 풀콤보! 몸이 고마워해요 💎',
+  '대단해요! 꾸준함이 당신을 만들어요 ⚡',
+  '오늘도 해냈어요! 자랑스럽습니다 🌟',
+  '풀콤보 달성! 이 기분, 기억하세요 🔥',
+];
+
+const DEFAULT_REWARDS=[
+  {lv:10,name:'☕ 카페 상품권 1만원',msg:'첫 보상! 커피 한 잔으로 자축하세요.'},
+  {lv:20,name:'📚 책 구매권',msg:'지식이 쌓이는 만큼 책도 늘려요.'},
+  {lv:35,name:'👟 운동화 구매권',msg:'장비도 레벨업!'},
+  {lv:50,name:'👕 의류 쇼핑 상품권 5만원',msg:'나에게 선물할 자격이 충분해요.'},
+  {lv:65,name:'🍽️ 외식 or 소규모 여행',msg:'중간 휴식도 보상이에요.'},
+  {lv:80,name:'💎 고급 악세서리 or 가전',msg:'정상이 눈앞이에요!'},
+  {lv:100,name:'📱 아이폰 — 최고 보상',msg:'당신은 진짜 해냈습니다. 레전드!'},
+];
+
+// ═══════════════════════════════════════════════════════════
+//  상태 로드·저장
+// ═══════════════════════════════════════════════════════════
+const KEY='3fit_v1';
+function loadDB(){
+  const def={
+    totalXP:0,todayXP:0,streak:0,lastDate:'',
+    coreChecked:[0,0,0],bonusChecked:[0,0,0],
+    exChecked:{},exInputs:{},todos:[],todayMemo:'',
+    history:{},avatar:'',quoteIdx:0,
+    customEx:[],rewards:JSON.parse(JSON.stringify(DEFAULT_REWARDS)),
+  };
+  try{return Object.assign(def,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch{return def;}
+}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(DB));}
+let DB=loadDB();
+
+// ═══════════════════════════════════════════════════════════
+//  자정 초기화
+// ═══════════════════════════════════════════════════════════
+function todayKey(){const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+function checkReset(){
+  const today=todayKey();
+  if(DB.lastDate===today)return;
+  if(DB.lastDate){
+    const coreDone=DB.coreChecked.filter(Boolean).length;
+    const anyDone=coreDone>0||DB.bonusChecked.some(Boolean)||Object.values(DB.exChecked).some(Boolean);
+    DB.history[DB.lastDate]={core:coreDone,full:coreDone===3,xp:DB.todayXP,streak:DB.streak,combo:DB.history[DB.lastDate]?.combo||false,memo:DB.todayMemo};
+    if(anyDone){DB.streak++;}else{DB.streak=0;}
+  }
+  DB.coreChecked=[0,0,0];DB.bonusChecked=[0,0,0];
+  DB.exChecked={};DB.exInputs={};DB.todayXP=0;DB.todayMemo='';
+  DB.todos=DB.todos.filter(t=>!t.done);
+  DB.lastDate=today;
+  saveDB();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  레벨 계산
+// ═══════════════════════════════════════════════════════════
+function getLv(xp){
+  let lv=1,acc=0,need=100;
+  while(xp>=acc+need){acc+=need;lv++;need=lv*100;if(lv>=100)break;}
+  const ch=CHARS.filter(c=>lv>=c.lvMin&&lv<=c.lvMax)[0]||CHARS[CHARS.length-1];
+  return{lv,char:ch,cur:xp-acc,need,pct:(xp-acc)/need*100};
+}
+
+// ═══════════════════════════════════════════════════════════
+//  페이지 전환
+// ═══════════════════════════════════════════════════════════
+function goPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('active');
+  el.classList.add('on');
+  if(id==='cal')renderCal();
+  if(id==='growth')renderGrowth();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  격언
+// ═══════════════════════════════════════════════════════════
+function nextQuote(){
+  DB.quoteIdx=(DB.quoteIdx+1)%QUOTES.length;
+  renderQuote();saveDB();
+}
+function renderQuote(){
+  const q=QUOTES[DB.quoteIdx%QUOTES.length];
+  document.getElementById('quote-txt').textContent=q.t;
+  document.getElementById('quote-src').textContent='— '+q.s;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  헤더·XP·링 업데이트
+// ═══════════════════════════════════════════════════════════
+function updateHeader(){
+  const li=getLv(DB.totalXP);
+  document.getElementById('lv-chip').textContent=`${li.char.emoji} Lv.${li.lv} ${li.char.name}`;
+  document.getElementById('xp-fill').style.width=li.pct+'%';
+  document.getElementById('xp-cur-lbl').textContent=`${li.cur} XP`;
+  document.getElementById('xp-need-lbl').textContent=`다음 레벨까지 ${li.need-li.cur} XP`;
+  document.getElementById('avatar-char').textContent=DB.avatar?'':li.char.emoji;
+
+  // 이행률 링 (핵심 미션 기준)
+  const coreDone=DB.coreChecked.filter(Boolean).length;
+  const pct=coreDone/3;
+  const circ=138.2;
+  document.getElementById('ring-fg').style.strokeDashoffset=circ-circ*pct;
+  document.getElementById('ring-fg').style.stroke=pct===1?'#30D158':'#2D8CFF';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  핵심 미션
+// ═══════════════════════════════════════════════════════════
+function renderCore(){
+  document.getElementById('core-list').innerHTML=CORE_MISSIONS.map((m,i)=>{
+    const done=DB.coreChecked[i];
+    return`<div class="ex-item">
+      <div class="ex-chk ${done?'done':''}" onclick="toggleCore(${i})">${done?'✓':''}</div>
+      <div class="ex-info">
+        <div class="ex-name ${done?'done':''}">${m.emoji} ${m.name}</div>
+        <div class="ex-desc">${m.desc}</div>
+      </div>
+      <div class="ex-coin">+${m.xp} XP</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCore(i){
+  const was=DB.coreChecked[i];
+  if(was){DB.coreChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-CORE_MISSIONS[i].xp);DB.todayXP=Math.max(0,DB.todayXP-CORE_MISSIONS[i].xp);}
+  else{
+    DB.coreChecked[i]=1;DB.totalXP+=CORE_MISSIONS[i].xp;DB.todayXP+=CORE_MISSIONS[i].xp;
+    showBadge('+'+CORE_MISSIONS[i].xp+' XP');
+    spawnParticles(8);
+    const msgs=CORE_MISSIONS[i].msgs;
+    setTimeout(()=>showDonePopup(CORE_MISSIONS[i].emoji+' '+CORE_MISSIONS[i].name,msgs[Math.floor(Math.random()*msgs.length)],CORE_MISSIONS[i].xp),300);
+    // 풀콤보 체크
+    setTimeout(()=>{
+      const newDone=[...DB.coreChecked];newDone[i]=1;
+      if(newDone.every(Boolean)&&!DB.history[todayKey()]?.full){
+        DB.totalXP+=50;DB.todayXP+=50;
+        saveDB();
+        setTimeout(()=>showFullCombo(),1200);
+      }
+    },100);
+  }
+  saveDB();renderCore();updateHeader();updateStats();renderStreak();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  보너스 미션
+// ═══════════════════════════════════════════════════════════
+function renderBonus(){
+  document.getElementById('bonus-list').innerHTML=BONUS_MISSIONS.map((m,i)=>{
+    const done=DB.bonusChecked[i];
+    return`<div class="ex-item">
+      <div class="bonus-chk ${done?'done':''}" onclick="toggleBonus(${i})">${done?'✓':''}</div>
+      <div class="ex-info">
+        <div class="ex-name ${done?'done':''}">${m.emoji} ${m.name}</div>
+      </div>
+      <div class="ex-coin">+${m.xp} XP</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleBonus(i){
+  const was=DB.bonusChecked[i];
+  if(was){DB.bonusChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-BONUS_MISSIONS[i].xp);DB.todayXP=Math.max(0,DB.todayXP-BONUS_MISSIONS[i].xp);}
+  else{
+    DB.bonusChecked[i]=1;DB.totalXP+=BONUS_MISSIONS[i].xp;DB.todayXP+=BONUS_MISSIONS[i].xp;
+    showBadge('+'+BONUS_MISSIONS[i].xp+' XP');spawnParticles(6);
+    const msgs=BONUS_MISSIONS[i].msgs;
+    setTimeout(()=>showDonePopup(BONUS_MISSIONS[i].emoji+' '+BONUS_MISSIONS[i].name,msgs[Math.floor(Math.random()*msgs.length)],BONUS_MISSIONS[i].xp),300);
+  }
+  saveDB();renderBonus();updateHeader();updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  운동 목록 (부위별)
+// ═══════════════════════════════════════════════════════════
+let curZone='all',curCat='strength';
+function setZone(z,el){curZone=z;document.querySelectorAll('.ztab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderEx();}
+function setCat(c,el){curCat=c;document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderEx();}
+
+function getFilteredEx(){
+  const all=[...EXERCISES,...DB.customEx.map(e=>({...e,cat:'my'}))];
+  return all.filter(e=>{
+    const zo=curZone==='all'||e.zone===curZone;
+    const ca=curCat==='my'?e.cat==='my':e.cat===curCat;
+    return zo&&ca;
+  });
+}
+
+function renderEx(){
+  const list=getFilteredEx();
+  const el=document.getElementById('ex-list');
+  if(!list.length){el.innerHTML=`<div style="color:var(--txt2);text-align:center;padding:20px 0;font-size:14px">운동이 없어요</div>`;return;}
+  el.innerHTML=list.map(e=>{
+    const done=DB.exChecked[e.id];
+    const val=DB.exInputs[e.id]||'';
+    const ytBtn=e.yt?`<button class="yt-btn" onclick="openYT('${e.yt}','${e.name}')" title="영상 보기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`:'';
+    return`<div class="ex-item">
+      <div class="ex-chk ${done?'done':''}" onclick="toggleEx('${e.id}',${e.xp})">${done?'✓':''}</div>
+      <div class="ex-info">
+        <div class="ex-name ${done?'done':''}">${e.name}</div>
+        <div class="ex-desc">${e.desc||''}</div>
+      </div>
+      <div class="ex-right">
+        <div class="ex-input-wrap">
+          <input class="ex-inp" type="number" placeholder="0" value="${val}" onchange="DB.exInputs['${e.id}']=this.value;saveDB()">
+          <span class="ex-unit">${e.unit}</span>
+        </div>
+        ${ytBtn}
+        <div class="ex-coin">+${e.xp}XP</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEx(id,xp){
+  if(DB.exChecked[id]){DB.exChecked[id]=false;DB.totalXP=Math.max(0,DB.totalXP-xp);DB.todayXP=Math.max(0,DB.todayXP-xp);}
+  else{DB.exChecked[id]=true;DB.totalXP+=xp;DB.todayXP+=xp;showBadge('+'+xp+' XP');spawnParticles(6);}
+  saveDB();renderEx();updateHeader();updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  To-do
+// ═══════════════════════════════════════════════════════════
+function addTodo(){
+  const inp=document.getElementById('todo-input');
+  const txt=inp.value.trim();if(!txt)return;
+  DB.todos.unshift({id:Date.now(),text:txt,done:false});
+  inp.value='';saveDB();renderTodos();
+}
+function toggleTodo(id){
+  const t=DB.todos.find(t=>t.id===id);if(!t)return;
+  if(!t.done){t.done=true;DB.totalXP+=10;DB.todayXP+=10;showBadge('+10 XP');}
+  else{t.done=false;DB.totalXP=Math.max(0,DB.totalXP-10);DB.todayXP=Math.max(0,DB.todayXP-10);}
+  saveDB();renderTodos();updateHeader();updateStats();
+}
+function deleteTodo(id){DB.todos=DB.todos.filter(t=>t.id!==id);saveDB();renderTodos();}
+function cleanTodos(){DB.todos=DB.todos.filter(t=>!t.done);saveDB();renderTodos();}
+function renderTodos(){
+  const el=document.getElementById('todo-list');
+  const hasDone=DB.todos.some(t=>t.done);
+  document.getElementById('todo-clean').style.display=hasDone?'block':'none';
+  el.innerHTML=DB.todos.map(t=>`
+    <div class="todo-item">
+      <div class="todo-chk ${t.done?'done':''}" onclick="toggleTodo(${t.id})">${t.done?'✓':''}</div>
+      <div class="todo-txt ${t.done?'done':''}">${t.text}</div>
+      <button class="todo-del" onclick="deleteTodo(${t.id})">×</button>
+    </div>`).join('');
+  updateStats();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  스탯
+// ═══════════════════════════════════════════════════════════
+function updateStats(){
+  document.getElementById('stat-xp').textContent=DB.todayXP;
+  document.getElementById('stat-core').textContent=DB.coreChecked.filter(Boolean).length+'/3';
+  document.getElementById('stat-todo').textContent=DB.todos.filter(t=>t.done).length;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  이번 주 스트릭
+// ═══════════════════════════════════════════════════════════
+function renderStreak(){
+  const days=['월','화','수','목','금','토','일'];
+  const today=new Date();const dow=today.getDay();const todayIdx=dow===0?6:dow-1;
+  const coreDone=DB.coreChecked.some(Boolean);
+  document.getElementById('streak-row').innerHTML=days.map((d,i)=>{
+    let cls='s-dot';
+    if(i<todayIdx)cls+=' done';
+    else if(i===todayIdx)cls+=coreDone?' done':' today';
+    return`<div class="${cls}"><span>${i<=todayIdx&&(i<todayIdx||coreDone)?'✓':d}</span></div>`;
+  }).join('');
+  document.getElementById('streak-count').textContent=DB.streak>0?`🔥 ${DB.streak}일 연속 달성 중`:'';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  콤보 배너
+// ═══════════════════════════════════════════════════════════
+function updateComboBanner(){
+  const s=DB.streak;
+  if(s<3){document.getElementById('combo-banner').style.display='none';return;}
+  const nextBonus=Math.ceil(s/3)*3;
+  document.getElementById('combo-banner').style.display='flex';
+  document.getElementById('combo-main').textContent=`🔥 ${s}일 연속 달성 중!`;
+  document.getElementById('combo-sub').textContent=`다음 보너스까지 ${nextBonus-s}일`;
+  document.getElementById('combo-badge').textContent=s+'일';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  메모
+// ═══════════════════════════════════════════════════════════
+function openMemoModal(){
+  const d=new Date();
+  document.getElementById('memo-date').textContent=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+  document.getElementById('memo-textarea').value=DB.todayMemo||'';
+  document.getElementById('pop-memo').classList.add('show');
+}
+function saveMemo(){
+  DB.todayMemo=document.getElementById('memo-textarea').value.trim();
+  saveDB();closePop('pop-memo');renderMemo();
+}
+function renderMemo(){
+  const wrap=document.getElementById('memo-card-wrap');
+  if(DB.todayMemo){
+    wrap.style.display='block';
+    document.getElementById('memo-display').textContent=DB.todayMemo;
+  }else{wrap.style.display='none';}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  캘린더
+// ═══════════════════════════════════════════════════════════
+let calY=new Date().getFullYear(),calM=new Date().getMonth();
+function calMove(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();}
+function renderCal(){
+  const MN=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  document.getElementById('cal-month-lbl').textContent=`${calY}년 ${MN[calM]}`;
+  const dows=['일','월','화','수','목','금','토'];
+  document.getElementById('cal-dow').innerHTML=dows.map(d=>`<div class="cal-dow-cell">${d}</div>`).join('');
+  const first=new Date(calY,calM,1).getDay();
+  const last=new Date(calY,calM+1,0).getDate();
+  const now=new Date();const todayStr=todayKey();
+  let cells='';let fullDays=0,partDays=0,monthXP=0,maxStreak=0,curS=0;
+  for(let i=0;i<first;i++)cells+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=last;d++){
+    const ds=`${calY}-${calM+1}-${d}`;
+    const h=DB.history[ds];
+    let cls='cal-cell';
+    if(ds===todayStr){
+      cls+=' today';
+      const coreDone=DB.coreChecked.filter(Boolean).length;
+      if(coreDone===3)cls+=' full';
+      else if(coreDone>0)cls+=' partial';
+    } else if(h){
+      if(h.full){cls+=' full';if(h.combo)cls+=' combo';fullDays++;curS++;}
+      else if(h.core>0){cls+=' partial';partDays++;curS=0;}
+      else curS=0;
+      monthXP+=h.xp||0;
+    }
+    maxStreak=Math.max(maxStreak,curS);
+    cells+=`<div class="${cls}">${d}</div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=cells;
+  const totalDays=Object.keys(DB.history).filter(k=>k.startsWith(`${calY}-${calM+1}-`)).length;
+  document.getElementById('cal-stats').innerHTML=`
+    <div class="cal-stat-item"><div class="cal-stat-val">${fullDays}</div><div class="cal-stat-lbl">풀콤보 달성</div></div>
+    <div class="cal-stat-item"><div class="cal-stat-val">${fullDays+partDays}</div><div class="cal-stat-lbl">달성일 수</div></div>
+    <div class="cal-stat-item"><div class="cal-stat-val">${monthXP}</div><div class="cal-stat-lbl">월 XP</div></div>
+    <div class="cal-stat-item"><div class="cal-stat-val">${maxStreak}</div><div class="cal-stat-lbl">최장 연속</div></div>
+    <div class="cal-stat-item"><div class="cal-stat-val">${DB.totalXP}</div><div class="cal-stat-lbl">총 누적 XP</div></div>
+    <div class="cal-stat-item"><div class="cal-stat-val">${DB.streak}</div><div class="cal-stat-lbl">현재 스트릭</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  성장 탭
+// ═══════════════════════════════════════════════════════════
+function renderGrowth(){
+  const li=getLv(DB.totalXP);
+  document.getElementById('char-emoji').textContent=li.char.emoji;
+  document.getElementById('char-name').textContent=li.char.name;
+  document.getElementById('char-sub').textContent=li.char.sub;
+  document.getElementById('char-xp-fill').style.width=li.pct+'%';
+  document.getElementById('char-xp-txt').textContent=`${li.cur} / ${li.need} XP (Lv.${li.lv})`;
+  // 캐릭터 그리드
+  document.getElementById('char-grid').innerHTML=CHARS.map(c=>{
+    const active=li.lv>=c.lvMin&&li.lv<=c.lvMax;
+    return`<div class="char-stage ${active?'current':''}">
+      <div class="char-stage-emoji">${c.emoji}</div>
+      <div class="char-stage-name">${c.name}</div>
+      <div class="char-stage-lv">Lv.${c.lvMin}${c.lvMax<999?'~'+c.lvMax:'+'}</div>
+    </div>`;
+  }).join('');
+  renderRewards();
+}
+
+// ─── 보상 로드맵 ───
+let rewardEditing=false;
+function toggleRewardEdit(){
+  rewardEditing=!rewardEditing;
+  document.getElementById('reward-edit-btn').textContent=rewardEditing?'완료':'편집';
+  renderRewards();
+}
+function renderRewards(){
+  const li=getLv(DB.totalXP);
+  document.getElementById('reward-list').innerHTML=DB.rewards.map((r,i)=>{
+    const achieved=li.lv>=r.lv;
+    if(rewardEditing){
+      return`<div class="reward-item">
+        <div class="reward-lv">Lv.${r.lv}</div>
+        <div style="flex:1">
+          <input style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:4px" value="${r.name}" onchange="DB.rewards[${i}].name=this.value;saveDB()">
+          <input style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;outline:none;color:var(--txt2)" value="${r.msg}" onchange="DB.rewards[${i}].msg=this.value;saveDB()">
+        </div>
+      </div>`;
+    }
+    return`<div class="reward-item">
+      <div class="reward-lv">Lv.${r.lv}</div>
+      <div class="reward-info" style="flex:1">
+        <div class="reward-name">${r.name}</div>
+        <div class="reward-msg">${r.msg}</div>
+      </div>
+      <div class="reward-status">${achieved?'✅':'🔒'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  커스텀 루틴 추가
+// ═══════════════════════════════════════════════════════════
+function showAddForm(){document.getElementById('pop-add').classList.add('show');}
+function saveCustomEx(){
+  const name=document.getElementById('f-name').value.trim();if(!name)return;
+  const zone=document.getElementById('f-zone').value;
+  const unit=document.getElementById('f-unit').value.trim()||'회';
+  const xp=parseInt(document.getElementById('f-coin').value)||10;
+  const ytRaw=document.getElementById('f-yt').value.trim();
+  let ytId='';
+  if(ytRaw){const m=ytRaw.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);if(m)ytId=m[1];}
+  DB.customEx.push({id:'c'+Date.now(),name,zone,cat:'my',unit,xp,yt:ytId,desc:'내 루틴'});
+  saveDB();closePop('pop-add');
+  ['f-name','f-unit','f-yt'].forEach(id=>document.getElementById(id).value='');
+  renderEx();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  유튜브 모달 (iframe 임베드 — 프리미엄 광고 없음)
+// ═══════════════════════════════════════════════════════════
+function openYT(videoId,name){
+  document.getElementById('yt-modal-title').textContent=name||'운동 영상';
+  // autoplay=1, rel=0(관련영상 제한), modestbranding=1(로고 최소화)
+  document.getElementById('yt-frame').src=`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  document.getElementById('yt-modal').classList.add('show');
+}
+function closeYT(){
+  document.getElementById('yt-frame').src='';
+  document.getElementById('yt-modal').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  아바타 업로드
+// ═══════════════════════════════════════════════════════════
+function uploadAvatar(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    DB.avatar=e.target.result;saveDB();
+    const av=document.getElementById('avatar-el');
+    av.innerHTML=`<img src="${DB.avatar}" alt="avatar">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  팝업
+// ═══════════════════════════════════════════════════════════
+function showDonePopup(title,msg,xp){
+  const emojis=['🎉','💪','⚡','🔥','✨','🌟'];
+  document.getElementById('pop-emoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
+  document.getElementById('pop-title').textContent=title;
+  document.getElementById('pop-msg').textContent=msg;
+  document.getElementById('pop-coin').textContent=`+${xp} XP`;
+  document.getElementById('pop-done').classList.add('show');
+}
+function showFullCombo(){
+  const msg=FC_MSGS[Math.floor(Math.random()*FC_MSGS.length)];
+  document.getElementById('fc-title').textContent='🏆 풀콤보 달성!';
+  document.getElementById('fc-msg').textContent=msg;
+  document.getElementById('fc-coin').textContent='+50 XP 보너스';
+  document.getElementById('pop-fullcombo').classList.add('show');
+  spawnParticles(16);
+  // 3의 배수 콤보 보너스
+  if(DB.streak>0&&DB.streak%3===0){
+    setTimeout(()=>{
+      DB.totalXP+=100;DB.todayXP+=100;saveDB();updateHeader();updateStats();
+      showBadge(`🔥 ${DB.streak}일 콤보! +100 XP`);
+    },1500);
+  }
+}
+function closePop(id){document.getElementById(id).classList.remove('show');}
+
+// ═══════════════════════════════════════════════════════════
+//  파티클 & 뱃지
+// ═══════════════════════════════════════════════════════════
+function spawnParticles(n){
+  const em=['⚡','🔥','💪','✨','🎉','🌟','💥','🏆'];
+  for(let i=0;i<n;i++){
+    setTimeout(()=>{
+      const p=document.createElement('div');p.className='particle';
+      p.textContent=em[Math.floor(Math.random()*em.length)];
+      p.style.left=(15+Math.random()*70)+'vw';
+      p.style.top=(30+Math.random()*30)+'vh';
+      document.body.appendChild(p);setTimeout(()=>p.remove(),1200);
+    },i*70);
+  }
+}
+function showBadge(msg){
+  const b=document.createElement('div');b.className='badge-txt';
+  b.textContent=msg;b.style.left='50%';b.style.top='40vh';
+  b.style.transform='translateX(-50%)';b.style.color='#FF9F0A';
+  b.style.background='rgba(255,159,10,.12)';b.style.padding='6px 16px';
+  b.style.borderRadius='20px';b.style.fontWeight='700';
+  document.body.appendChild(b);
+  setTimeout(()=>b.remove(),2500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PWA Service Worker
+// ═══════════════════════════════════════════════════════════
+if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+
+// ═══════════════════════════════════════════════════════════
+//  초기화
+// ═══════════════════════════════════════════════════════════
+function init(){
+  checkReset();
+  renderQuote();
+  if(DB.avatar){document.getElementById('avatar-el').innerHTML=`<img src="${DB.avatar}" alt="avatar">`;}
+  updateHeader();
+  renderCore();renderBonus();renderTodos();renderEx();
+  updateStats();renderStreak();renderMemo();updateComboBanner();
+}
+init();
+</script>
+</body>
+</html>
