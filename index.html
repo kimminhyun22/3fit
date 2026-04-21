@@ -310,16 +310,14 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
   <div class="zone-tabs" id="zone-tabs">
     <div class="ztab on" onclick="setZone('all',this)">전체</div>
     <div class="ztab" onclick="setZone('upper',this)">상체 💪</div>
-    <div class="ztab" onclick="setZone('core',this)">코어 🔄</div>
+    <div class="ztab" onclick="setZone('core',this)">허리·코어 🔄</div>
     <div class="ztab" onclick="setZone('lower',this)">하체 🦵</div>
-    <div class="ztab" onclick="setZone('cardio',this)">유산소 ❤️</div>
     <div class="ztab" onclick="setZone('stretch',this)">스트레칭 🧘</div>
   </div>
 
   <div class="card">
     <div class="cat-tabs">
       <div class="ctab on" onclick="setCat('strength',this)">근력</div>
-      <div class="ctab" onclick="setCat('cardio',this)">유산소</div>
       <div class="ctab" onclick="setCat('stretch',this)">스트레칭</div>
       <div class="ctab" onclick="setCat('my',this)">내 루틴</div>
     </div>
@@ -551,26 +549,22 @@ const BONUS_MISSIONS=[
 ];
 
 const EXERCISES=[
-  {id:'e1',name:'턱걸이',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'eGo4IYlbE5g',desc:'등·이두 강화'},
-  {id:'e2',name:'푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'44MbRYmXLWk',desc:'가슴·삼두 강화'},
-  {id:'e3',name:'파이크 푸쉬업',zone:'upper',cat:'strength',unit:'회',xp:7,yt:'x7_I5SO8bkM',desc:'어깨 강화'},
-  {id:'e4',name:'딥스',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'2z8JmcrW-As',desc:'삼두·가슴 하부'},
-  {id:'e5',name:'플랭크',zone:'core',cat:'strength',unit:'초',xp:7,yt:'ASdvN_XEl_c',desc:'코어 전체 강화'},
-  {id:'e6',name:'크런치',zone:'core',cat:'strength',unit:'회',xp:5,yt:'MKmrqcJjlGE',desc:'복근 상부'},
-  {id:'e7',name:'레그레이즈',zone:'core',cat:'strength',unit:'회',xp:6,yt:'JB2oyawG9KQ',desc:'복근 하부'},
-  {id:'e8',name:'슈퍼맨',zone:'core',cat:'strength',unit:'회',xp:5,yt:'z6PJMT2y8GQ',desc:'허리 근육 강화'},
-  {id:'e9',name:'스쿼트',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'YaXPRqUwItQ',desc:'허벅지·엉덩이'},
-  {id:'e10',name:'런지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'QOVaHwm-Q6U',desc:'다리 균형 강화'},
-  {id:'e11',name:'힙브릿지',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'OUgsJ8-Vi0E',desc:'엉덩이·햄스트링'},
-  {id:'e12',name:'카프레이즈',zone:'lower',cat:'strength',unit:'회',xp:4,yt:'gwLzBJYoWlI',desc:'종아리 강화'},
-  {id:'e13',name:'제자리 뛰기',zone:'cardio',cat:'cardio',unit:'분',xp:8,yt:'FjHGZj2IjBk',desc:'심폐 강화'},
-  {id:'e14',name:'버피',zone:'cardio',cat:'cardio',unit:'회',xp:10,yt:'dZgVxmf6jkA',desc:'전신 유산소'},
-  {id:'e15',name:'점핑잭',zone:'cardio',cat:'cardio',unit:'회',xp:6,yt:'iSSAk4XCsRA',desc:'워밍업·유산소'},
-  {id:'e16',name:'마운틴클라이머',zone:'cardio',cat:'cardio',unit:'회',xp:8,yt:'nmwgirgXLYM',desc:'코어+유산소'},
-  {id:'e17',name:'고양이소 자세',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'RqcOCBb4arc',desc:'척추 이완'},
-  {id:'e18',name:'햄스트링 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'WxbMVFOoMoA',desc:'허벅지 뒤쪽'},
-  {id:'e19',name:'어깨 돌리기',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'g_NxHzAnFOE',desc:'어깨 이완'},
-  {id:'e20',name:'목 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:3,yt:'wQylqaW6p7A',desc:'목·어깨 이완'},
+  // ── 상체 (바벨라토르 리쌤) ──
+  {id:'e1',name:'턱걸이 정자세',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'nWhS28U6bCY',desc:'바벨라토르 · 완벽한 풀업 교본'},
+  {id:'e2',name:'턱걸이 초보 루틴',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'wyCLYroscSM',desc:'바벨라토르 · 초보자 시작법'},
+  {id:'e3',name:'푸쉬업 자세',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'8txh_smTqPA',desc:'바벨라토르 · 가슴 자극 200%'},
+  // ── 허리·코어 ──
+  {id:'e4',name:'플랭크 정석',zone:'core',cat:'strength',unit:'초',xp:7,yt:'Zq8nRY9P_cM',desc:'바벨라토르 · 완벽한 플랭크 교본'},
+  {id:'e5',name:'플랭크 허리 건강',zone:'core',cat:'strength',unit:'초',xp:7,yt:'opjhqOYNFJE',desc:'송영민 · 허리 코어 강화'},
+  {id:'e6',name:'뱃살 코어 운동',zone:'core',cat:'strength',unit:'분',xp:6,yt:'JkQJCiHOPTQ',desc:'뱃살 빼는 코어 루틴'},
+  // ── 하체 ──
+  {id:'e7',name:'스쿼트·런지 자세',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'0LSfy60yRpM',desc:'송영민 · 무릎 안전하게 하체 운동'},
+  {id:'e8',name:'런지 기본기',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'iMoW5neyRFk',desc:'최고의 하체운동 런지 배우기'},
+  {id:'e9',name:'맨몸 하체 루틴',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'Ij5b22zQss0',desc:'데스런 · 스쿼트·런지 단계별'},
+  // ── 스트레칭 ──
+  {id:'e10',name:'13분 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'5J2a4uUrY2U',desc:'소미핏 · 전신순환·근육이완'},
+  {id:'e11',name:'골반 체형 교정',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'nQlbDogfCpE',desc:'소미핏 · 골반·체형교정 스트레칭'},
+  {id:'e12',name:'운동 전 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'oquaP1cFBqY',desc:'세모핏 · 부상예방 스트레칭'},
 ];
 
 const CHARS=[
