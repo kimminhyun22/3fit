@@ -84,7 +84,9 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
 .ex-inp{width:46px;height:30px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:13px;font-weight:600;background:var(--bg);outline:none;font-family:inherit;}
 .ex-inp:focus{border-color:var(--p);}
 .ex-unit{font-size:11px;color:var(--txt2);}
-.yt-btn{width:30px;height:30px;border-radius:8px;background:#FF3B30;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.yt-btn{width:30px;height:30px;border-radius:8px;background:#FF3B30;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .15s;}
+.yt-btn:active{transform:scale(.9);}
+.yt-btn.no-yt{background:var(--border);}
 .yt-btn svg{width:13px;height:13px;fill:#fff;}
 .ex-coin{font-size:11px;font-weight:700;color:var(--a);background:var(--al);padding:3px 7px;border-radius:6px;}
 
@@ -440,18 +442,7 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
   <div class="tab" onclick="goPage('settings',this)"><div class="tab-ico">⚙️</div><div class="tab-lbl">설정</div></div>
 </nav>
 
-<!-- ═══ 유튜브 모달 ═══ -->
-<div class="yt-modal" id="yt-modal">
-  <div class="yt-modal-inner" style="width:min(480px,100vw)">
-    <div class="yt-modal-header">
-      <div class="yt-modal-title" id="yt-modal-title">운동 영상</div>
-      <button class="yt-close-btn" onclick="closeYT()">✕</button>
-    </div>
-    <div class="yt-frame-wrap">
-      <iframe id="yt-frame" src="" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-    </div>
-  </div>
-</div>
+<!-- yt-modal 제거됨 — 유튜브 앱 직접 실행 방식으로 변경 -->
 
 <!-- ═══ 완료 팝업 ═══ -->
 <div class="pop-overlay" id="pop-done">
@@ -794,7 +785,9 @@ function renderEx(){
     const done=DB.exChecked[e.id];
     const val=DB.exInputs[e.id]||'';
     const ytId=DB.ytOverrides[e.id]||(e.yt||'');
-    const ytBtn=ytId?`<button class="yt-btn" onclick="openYT('${e.id}','${e.name}')" title="영상 보기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`:'<button class="yt-btn" style="background:var(--txt3);cursor:pointer" onclick="goPage(\'settings\',document.querySelectorAll(\'.tab\')[3])" title="영상 없음 — 설정에서 추가"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>';
+    const ytBtn=ytId
+      ? `<button class="yt-btn" onclick="openYT('${e.id}','${e.name}')" title="유튜브 영상 열기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`
+      : `<button class="yt-btn no-yt" onclick="goPage('settings',document.querySelectorAll('.tab')[3])" title="영상 없음 — 설정에서 추가"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`;
     return`<div class="ex-item">
       <div class="ex-chk ${done?'done':''}" onclick="toggleEx('${e.id}',${e.xp})">${done?'✓':''}</div>
       <div class="ex-info">
@@ -1026,12 +1019,22 @@ function saveCustomEx(){
 // ═══════════════════════════════════════════════════════════
 //  유튜브 모달 (iframe 임베드 — 프리미엄 광고 없음)
 // ═══════════════════════════════════════════════════════════
-function openYT(videoId,name){
-  const finalId=DB.ytOverrides[videoId]||videoId;
-  if(!finalId){alert('영상 주소가 없어요.\n설정 탭에서 유튜브 링크를 추가해주세요.');return;}
-  document.getElementById('yt-modal-title').textContent=name||'운동 영상';
-  document.getElementById('yt-frame').src=`https://www.youtube.com/embed/${finalId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-  document.getElementById('yt-modal').classList.add('show');
+function openYT(exId, name){
+  const e=[...EXERCISES,...DB.customEx].find(x=>x.id===exId);
+  const finalId=DB.ytOverrides[exId]||(e?e.yt:'');
+  if(!finalId){
+    alert('영상 주소가 없어요.\n⚙️ 설정 탭에서 유튜브 링크를 추가해주세요.');
+    return;
+  }
+  // 유튜브 앱 딥링크 → 앱 없으면 브라우저로 fallback
+  const ytApp='youtube://www.youtube.com/watch?v='+finalId;
+  const ytWeb='https://www.youtube.com/watch?v='+finalId;
+  // iOS: youtube:// 시도, 300ms 후 앱 미설치면 웹으로
+  const start=Date.now();
+  window.location.href=ytApp;
+  setTimeout(()=>{
+    if(Date.now()-start<400) window.open(ytWeb,'_blank');
+  },300);
 }
 function closeYT(){
   document.getElementById('yt-frame').src='';
