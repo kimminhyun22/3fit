@@ -10,584 +10,474 @@
 <link rel="manifest" href="manifest.json">
 <style>
 :root{
-  --p:#2D8CFF;--pl:#E8F1FF;--pm:#9EC4FF;--pd:#1A5BBF;
+  --p:#2D8CFF;--pl:#E8F1FF;--pd:#1A5BBF;
   --g:#30D158;--gl:#E3F9EC;
   --a:#FF9F0A;--al:#FFF3DC;
+  --red:#FF3B30;
   --bg:#F5F5F7;--card:#FFFFFF;--dark:#1C1C1E;
   --txt:#1D1D1F;--txt2:#6E6E73;--txt3:#AEAEB2;
-  --border:#E5E5EA;--r:18px;--sh:0 1px 4px rgba(0,0,0,.07);
-  --tab-h:68px;
+  --border:#E5E5EA;--radius:18px;--sh:0 1px 6px rgba(0,0,0,.08);
+  --tab-h:72px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
 body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);color:var(--txt);max-width:480px;margin:0 auto;position:relative;}
-
-/* ─── 페이지 ─── */
-.page{display:none;flex-direction:column;height:calc(100vh - var(--tab-h));overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px;}
+.page{display:none;flex-direction:column;height:calc(100vh - var(--tab-h));overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px;}
 .page.active{display:flex;}
-
-/* ─── 카드 ─── */
-.card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:18px;margin:0 14px 11px;}
-.card-title{font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;}
-
-/* ─── 격언 ─── */
-.quote-card{background:var(--dark);border-radius:var(--r);padding:16px 20px 16px 20px;margin:8px 14px 11px;position:relative;cursor:pointer;}
-.quote-card::before{content:'"';position:absolute;top:-12px;left:8px;font-size:90px;color:rgba(255,255,255,.05);font-family:Georgia,serif;line-height:1;pointer-events:none;}
-.quote-txt{font-size:15px;font-weight:500;color:#fff;line-height:1.7;padding-right:36px;word-break:keep-all;}
-.quote-src{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px;}
-.quote-btn{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;font-size:15px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-
-/* ─── 헤더 카드 ─── */
-.header-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;margin:0 14px 11px;display:flex;align-items:center;gap:14px;}
-.avatar-wrap{position:relative;cursor:pointer;flex-shrink:0;}
-.avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--sh);padding:18px;margin:0 14px 12px;}
+.lbl{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
+/* 격언 */
+.qcard{background:var(--dark);border-radius:var(--radius);padding:18px 52px 18px 20px;margin:10px 14px 12px;position:relative;cursor:pointer;min-height:72px;}
+.qcard::before{content:'"';position:absolute;top:-8px;left:10px;font-size:86px;color:rgba(255,255,255,.05);font-family:Georgia,serif;line-height:1;pointer-events:none;}
+.qtxt{font-size:15px;font-weight:500;color:#fff;line-height:1.7;word-break:keep-all;}
+.qby{font-size:12px;color:rgba(255,255,255,.4);margin-top:7px;}
+.qbtn{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;font-size:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+/* 헤더 */
+.hcard{background:var(--card);border-radius:var(--radius);box-shadow:var(--sh);padding:16px;margin:0 14px 12px;display:flex;align-items:center;gap:14px;}
+.avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;cursor:pointer;}
 .avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-.avatar-input{display:none;}
-.ring-outer{position:absolute;inset:-3px;border-radius:50%;}
-.header-info{flex:1;min-width:0;}
-.header-lv{font-size:13px;font-weight:700;color:var(--p);display:flex;align-items:center;gap:6px;}
-.header-lv-chip{background:var(--pl);color:var(--pd);border-radius:20px;padding:2px 9px;font-size:12px;font-weight:700;}
-.header-name{font-size:19px;font-weight:700;margin:2px 0;}
-.xp-row{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:6px 0 3px;}
-.xp-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;margin-top:4px;}
-.xp-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:10px;transition:width .55s cubic-bezier(.34,1.56,.64,1);}
-.ring-svg{flex-shrink:0;}
-
-/* ─── 콤보 배너 ─── */
-.combo-banner{margin:0 14px 11px;background:linear-gradient(135deg,#6B63D4,#4A42AA);border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;color:#fff;}
-.combo-main{font-size:15px;font-weight:700;}
-.combo-sub{font-size:12px;opacity:.75;margin-top:2px;}
-.combo-badge{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 12px;font-size:20px;font-weight:800;}
-
-/* ─── 부위 탭 ─── */
-.zone-tabs{display:flex;gap:7px;padding:0 14px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;}
-.zone-tabs::-webkit-scrollbar{display:none;}
-.ztab{flex-shrink:0;padding:7px 15px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .2s;white-space:nowrap;}
-.ztab.on{background:var(--dark);color:#fff;border-color:var(--dark);}
-
-/* ─── 카테고리 탭 ─── */
-.cat-tabs{display:flex;gap:6px;margin-bottom:14px;}
-.ctab{flex:1;text-align:center;padding:7px 2px;border-radius:10px;border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .2s;}
-.ctab.on{background:var(--p);color:#fff;border-color:var(--p);}
-
-/* ─── 운동 아이템 ─── */
-.ex-item{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--border);}
-.ex-item:last-child{border-bottom:none;padding-bottom:0;}
-.ex-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:12px;color:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
-.ex-chk.done{background:var(--g);border-color:var(--g);color:#fff;transform:scale(1.1);}
-.ex-info{flex:1;min-width:0;}
-.ex-name{font-size:15px;font-weight:600;}
-.ex-name.done{text-decoration:line-through;color:var(--txt3);}
-.ex-desc{font-size:11px;color:var(--txt2);margin-top:1px;}
-.ex-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
-.ex-input-wrap{display:flex;align-items:center;gap:3px;}
-.ex-inp{width:46px;height:30px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:13px;font-weight:600;background:var(--bg);outline:none;font-family:inherit;}
-.ex-inp:focus{border-color:var(--p);}
-.ex-unit{font-size:11px;color:var(--txt2);}
-.yt-btn{width:30px;height:30px;border-radius:8px;background:#FF3B30;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .15s;}
-.yt-btn:active{transform:scale(.9);}
-.yt-btn.no-yt{background:var(--border);}
-.yt-btn svg{width:13px;height:13px;fill:#fff;}
-.ex-coin{font-size:11px;font-weight:700;color:var(--a);background:var(--al);padding:3px 7px;border-radius:6px;}
-
-/* ─── 보너스 미션 ─── */
-.bonus-chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--g);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:12px;color:transparent;transition:all .25s;}
-.bonus-chk.done{background:var(--g);border-color:var(--g);color:#fff;}
-
-/* ─── To-do ─── */
-.todo-divider{border:none;border-top:1px dashed var(--border);margin:10px 0;}
-.todo-input-row{display:flex;gap:8px;margin-bottom:8px;}
-.todo-input{flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;font-family:inherit;background:var(--bg);}
-.todo-input:focus{border-color:var(--p);}
-.todo-add-btn{padding:8px 14px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;}
-.todo-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
-.todo-item:last-child{border-bottom:none;}
-.todo-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:10px;color:transparent;transition:all .2s;}
-.todo-chk.done{background:var(--g);border-color:var(--g);color:#fff;}
-.todo-txt{flex:1;font-size:14px;}
-.todo-txt.done{text-decoration:line-through;color:var(--txt3);}
-.todo-del{background:none;border:none;color:var(--txt3);font-size:16px;cursor:pointer;padding:0 2px;line-height:1;}
-.todo-clean{font-size:12px;color:var(--txt2);background:none;border:1px solid var(--border);border-radius:8px;padding:4px 10px;cursor:pointer;margin-top:8px;}
-
-/* ─── 오늘 스탯 ─── */
-.stat3{display:flex;gap:8px;}
-.stat3-item{flex:1;background:var(--bg);border-radius:12px;padding:12px;text-align:center;}
-.stat3-val{font-size:22px;font-weight:700;}
-.stat3-lbl{font-size:10px;color:var(--txt2);margin-top:2px;}
-
-/* ─── 스트릭 ─── */
-.streak-row{display:flex;gap:5px;position:relative;}
-.s-dot{flex:1;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:var(--bg);color:var(--txt3);flex-direction:column;gap:1px;}
-.s-dot .s-lbl{font-size:9px;}
-.s-dot.done{background:linear-gradient(135deg,var(--p),var(--g));color:#fff;}
-.s-dot.today{background:var(--pl);border:1.5px solid var(--p);color:var(--pd);}
-.streak-count{font-size:12px;font-weight:700;color:var(--p);text-align:right;margin-top:6px;}
-
-/* ─── 메모 카드 ─── */
-.memo-card{background:var(--pl);border-radius:var(--r);padding:14px 16px;margin-top:10px;}
-.memo-card-title{font-size:11px;font-weight:600;color:var(--pd);margin-bottom:6px;}
-.memo-content{font-size:14px;color:var(--txt);line-height:1.6;}
-.memo-edit-btn{font-size:12px;color:var(--p);background:none;border:none;cursor:pointer;margin-top:6px;padding:0;}
-
-/* ─── 캘린더 페이지 ─── */
-.cal-nav-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.cal-nav-btn{background:none;border:none;font-size:20px;color:var(--p);cursor:pointer;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
-.cal-month-lbl{font-size:17px;font-weight:700;}
-.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
-.cal-dow-cell{text-align:center;font-size:10px;font-weight:600;color:var(--txt2);padding-bottom:4px;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.cal-cell{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--txt);cursor:pointer;transition:all .15s;flex-direction:column;gap:1px;}
-.cal-cell.empty{pointer-events:none;}
-.cal-cell.today{background:var(--p);color:#fff;font-weight:700;}
-.cal-cell.full{background:var(--g);color:#fff;}
-.cal-cell.full.combo{outline:2px solid var(--p);outline-offset:1px;}
-.cal-cell.partial{background:var(--gl);color:#1a6632;}
-.cal-cell .cal-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.7);}
-.cal-stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
-.cal-stat-item{background:var(--bg);border-radius:12px;padding:12px;text-align:center;}
-.cal-stat-val{font-size:20px;font-weight:700;}
-.cal-stat-lbl{font-size:10px;color:var(--txt2);margin-top:2px;}
-.cal-legend{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--txt2);}
-.leg-dot{width:10px;height:10px;border-radius:3px;}
-
-/* ─── 성장 탭 ─── */
-.char-hero{background:var(--dark);border-radius:var(--r);padding:24px 20px;margin:8px 14px 11px;text-align:center;color:#fff;}
-.char-emoji{font-size:60px;margin-bottom:8px;}
-.char-name{font-size:20px;font-weight:700;}
-.char-sub{font-size:13px;color:rgba(255,255,255,.55);margin-top:4px;}
-.char-xp-bar{height:6px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-top:14px;}
-.char-xp-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:10px;transition:width .6s ease;}
-.char-xp-txt{font-size:12px;color:rgba(255,255,255,.55);margin-top:6px;}
-.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.char-stage{background:var(--bg);border-radius:12px;padding:12px;text-align:center;transition:all .2s;}
-.char-stage.current{background:var(--pl);border:2px solid var(--p);}
-.char-stage-emoji{font-size:26px;margin-bottom:4px;}
-.char-stage-name{font-size:12px;font-weight:700;color:var(--txt);}
-.char-stage-lv{font-size:10px;color:var(--txt2);margin-top:2px;}
-.reward-item{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--border);}
-.reward-item:last-child{border-bottom:none;}
-.reward-lv{font-size:12px;font-weight:700;color:var(--pd);background:var(--pl);padding:3px 8px;border-radius:8px;flex-shrink:0;min-width:44px;text-align:center;}
-.reward-name{flex:1;font-size:14px;font-weight:600;}
-.reward-msg{font-size:11px;color:var(--txt2);margin-top:2px;}
-.reward-status{font-size:13px;flex-shrink:0;}
-.reward-edit-btn{font-size:12px;color:var(--p);background:none;border:none;cursor:pointer;}
-
-/* ─── 유튜브 모달 ─── */
-.yt-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;}
-.yt-modal.show{display:flex;}
-.yt-modal-inner{width:100%;max-width:480px;background:#000;border-radius:16px;overflow:hidden;}
-.yt-modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#111;}
-.yt-modal-title{font-size:14px;font-weight:600;color:#fff;flex:1;margin-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.yt-close-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.yt-frame-wrap{position:relative;width:100%;padding-bottom:56.25%;}
-.yt-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
-
-/* ─── 팝업 ─── */
-.pop-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.pop-overlay.show{display:flex;}
-.pop{background:var(--card);border-radius:24px;padding:28px 22px;width:min(320px,90vw);text-align:center;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
-@keyframes popIn{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
-.pop-emoji{font-size:52px;margin-bottom:10px;}
-.pop-title{font-size:20px;font-weight:700;margin-bottom:6px;}
-.pop-msg{font-size:14px;color:var(--txt2);line-height:1.6;}
-.pop-coin{font-size:24px;font-weight:800;color:var(--a);margin:12px 0;}
-.pop-btn{width:100%;padding:14px;background:var(--dark);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:4px;}
-.pop-btn-outline{width:100%;padding:12px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;}
-
-/* ─── 메모 모달 ─── */
-.memo-modal-content{text-align:left;}
-.memo-modal-date{font-size:13px;color:var(--txt2);margin-bottom:10px;}
-.memo-textarea{width:100%;min-height:110px;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;resize:none;line-height:1.6;}
-.memo-textarea:focus{border-color:var(--p);}
-
-/* ─── 파티클 ─── */
-.particle{position:fixed;pointer-events:none;z-index:300;font-size:18px;animation:fly 1.2s ease-out forwards;}
-@keyframes fly{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-120px) scale(.4);}}
-.badge-txt{position:fixed;pointer-events:none;z-index:300;font-size:14px;font-weight:700;animation:badge .3s ease-in forwards;animation-delay:.1s;opacity:0;}
-@keyframes badge{0%{opacity:0;transform:translateY(10px);}20%{opacity:1;transform:translateY(0);}80%{opacity:1;}100%{opacity:0;}}
-
-/* ─── 탭바 ─── */
-.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:var(--tab-h);background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;}
-.tab-ico{font-size:22px;}
-.tab-lbl{font-size:10px;font-weight:600;color:var(--txt2);}
-.tab.on .tab-lbl{color:var(--p);}
-
-/* ─── 루틴 추가 팝업 ─── */
-.form-pop{background:var(--card);border-radius:24px;padding:24px 20px;width:min(340px,92vw);text-align:left;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
-.form-pop-title{font-size:18px;font-weight:700;margin-bottom:16px;}
-.form-field{margin-bottom:10px;}
-.form-label{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:4px;}
-.form-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;}
-.form-input:focus{border-color:var(--p);}
-.form-row{display:flex;gap:8px;margin-top:4px;}
-.form-btn{flex:1;padding:12px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;}
-.form-btn.cancel{background:transparent;border:1.5px solid var(--border);color:var(--txt2);}
-.form-btn.save{background:var(--dark);border:none;color:#fff;}
-.add-routine-btn{width:100%;padding:13px;border:2px dashed var(--border);border-radius:var(--r);background:transparent;font-size:14px;font-weight:600;color:var(--txt2);cursor:pointer;margin-top:6px;transition:all .2s;}
-.add-routine-btn:hover{border-color:var(--p);color:var(--p);}
+.hinfo{flex:1;min-width:0;}
+.lvchip{display:inline-flex;align-items:center;gap:4px;background:var(--pl);color:var(--pd);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;margin-bottom:4px;}
+.hname{font-size:20px;font-weight:700;letter-spacing:-.3px;}
+.xprow{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:6px;margin-bottom:4px;}
+.xpbar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.xpfill{height:100%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:10px;transition:width .55s cubic-bezier(.34,1.56,.64,1);}
+.ringwrap{width:54px;height:54px;position:relative;flex-shrink:0;}
+.ringwrap svg{transform:rotate(-90deg);}
+.ringpct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--txt2);}
+/* 콤보 배너 */
+.cbanner{margin:0 14px 12px;background:linear-gradient(135deg,#6B63D4,#4A42AA);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;color:#fff;}
+.cmain{font-size:15px;font-weight:700;}
+.csub{font-size:12px;opacity:.7;margin-top:2px;}
+.cnum{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:20px;font-weight:800;}
+/* 미션 */
+.mitem{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);}
+.mitem:last-child{border-bottom:none;padding-bottom:0;}
+.cchk{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:13px;color:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+.cchk.done{background:var(--p);border-color:var(--p);color:#fff;transform:scale(1.05);}
+.bchk{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--g);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:13px;color:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+.bchk.done{background:var(--g);border-color:var(--g);color:#fff;}
+.minfo{flex:1;}
+.mname{font-size:15px;font-weight:600;}
+.mname.done{text-decoration:line-through;color:var(--txt3);}
+.mdesc{font-size:12px;color:var(--txt2);margin-top:2px;}
+.xpbadge{font-size:12px;font-weight:700;color:var(--a);background:var(--al);padding:4px 10px;border-radius:8px;flex-shrink:0;white-space:nowrap;}
+/* Todo */
+.tsep{border:none;border-top:1px dashed var(--border);margin:12px 0;}
+.trow{display:flex;gap:8px;margin-bottom:10px;}
+.tinp{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);}
+.tinp:focus{border-color:var(--p);}
+.tadd{padding:10px 18px;background:var(--p);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;}
+.titem{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.titem:last-child{border-bottom:none;}
+.tchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:11px;color:transparent;transition:all .2s;}
+.tchk.done{background:var(--g);border-color:var(--g);color:#fff;}
+.ttxt{flex:1;font-size:14px;}
+.ttxt.done{text-decoration:line-through;color:var(--txt3);}
+.tdel{background:none;border:none;color:var(--txt3);font-size:18px;cursor:pointer;line-height:1;padding:0 2px;}
+.tclean{font-size:12px;color:var(--txt2);background:none;border:1px solid var(--border);border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:10px;}
+/* 스탯 */
+.srow{display:flex;gap:8px;}
+.sbox{flex:1;background:var(--bg);border-radius:13px;padding:13px 8px;text-align:center;}
+.sval{font-size:22px;font-weight:700;}
+.slbl{font-size:11px;color:var(--txt2);margin-top:2px;}
+/* 스트릭 */
+.sdots{display:flex;gap:5px;}
+.sdot{flex:1;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:11px;font-weight:600;color:var(--txt3);}
+.sdot.done{background:linear-gradient(135deg,var(--p),var(--g));color:#fff;}
+.sdot.today{background:var(--pl);border:1.5px solid var(--p);color:var(--pd);}
+.snum{font-size:12px;font-weight:700;color:var(--p);text-align:right;margin-top:7px;}
+/* 운동 탭 */
+.extabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;}
+.extabs::-webkit-scrollbar{display:none;}
+.etab{flex-shrink:0;padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.etab.on{background:var(--dark);color:#fff;border-color:var(--dark);}
+/* 운동 아이템 */
+.exitem{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--border);}
+.exitem:last-child{border-bottom:none;padding-bottom:0;}
+.exchk{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:12px;color:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+.exchk.done{background:var(--g);border-color:var(--g);color:#fff;transform:scale(1.05);}
+.exname{flex:1;font-size:15px;font-weight:600;}
+.exname.done{text-decoration:line-through;color:var(--txt3);}
+.ytbtn{width:30px;height:30px;border-radius:8px;background:var(--red);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.ytbtn.noyt{background:var(--border);}
+.ytbtn svg{width:12px;height:12px;fill:#fff;}
+.exaddbtn{width:100%;padding:13px;border:2px dashed var(--border);border-radius:var(--radius);background:transparent;font-size:14px;font-weight:600;color:var(--txt2);cursor:pointer;margin-top:8px;}
+/* 메모 */
+.memobox{background:var(--pl);border-radius:13px;padding:14px 16px;margin-top:10px;}
+.memotxt{font-size:14px;color:var(--txt);line-height:1.65;}
+.memoedit{font-size:12px;color:var(--p);background:none;border:none;cursor:pointer;margin-top:6px;padding:0;}
+/* 캘린더 */
+.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.calnavbtn{background:none;border:none;font-size:22px;color:var(--p);cursor:pointer;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.calmonth{font-size:17px;font-weight:700;}
+.caldow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
+.caldowc{text-align:center;font-size:10px;font-weight:600;color:var(--txt2);padding-bottom:4px;}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.calday{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;}
+.calday.empty{pointer-events:none;}
+.calday.today{background:var(--p);color:#fff;font-weight:700;}
+.calday.full{background:var(--g);color:#fff;}
+.calday.full.combo{outline:2.5px solid var(--p);outline-offset:1px;}
+.calday.part{background:var(--gl);color:#0F6E56;}
+.calleg{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;}
+.callegitem{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--txt2);}
+.callegdot{width:10px;height:10px;border-radius:3px;}
+.calstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.calstat{background:var(--bg);border-radius:12px;padding:13px;text-align:center;}
+.calstatval{font-size:20px;font-weight:700;}
+.calstatlbl{font-size:10px;color:var(--txt2);margin-top:2px;}
+/* 성장 */
+.charhero{background:var(--dark);border-radius:var(--radius);padding:26px 20px;margin:10px 14px 12px;text-align:center;color:#fff;}
+.charemoji{font-size:64px;margin-bottom:8px;}
+.charname{font-size:22px;font-weight:700;}
+.charsub{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;}
+.charxpbar{height:6px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden;margin-top:16px;}
+.charxpfill{height:100%;background:linear-gradient(90deg,var(--p),var(--g));border-radius:10px;transition:width .6s ease;}
+.charxptxt{font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;}
+.chargrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.charstage{background:var(--bg);border-radius:13px;padding:14px 8px;text-align:center;}
+.charstage.current{background:var(--pl);border:2px solid var(--p);}
+.charstageemoji{font-size:28px;margin-bottom:4px;}
+.charstagename{font-size:13px;font-weight:700;}
+.charstagelv{font-size:10px;color:var(--txt2);margin-top:2px;}
+.rwrow{display:flex;align-items:flex-start;gap:10px;padding:13px 0;border-bottom:1px solid var(--border);}
+.rwrow:last-child{border-bottom:none;}
+.rwlv{font-size:12px;font-weight:700;color:var(--pd);background:var(--pl);padding:3px 9px;border-radius:8px;flex-shrink:0;}
+.rwname{font-size:14px;font-weight:600;}
+.rwmsg{font-size:11px;color:var(--txt2);margin-top:2px;}
+.rwsts{font-size:14px;flex-shrink:0;margin-left:auto;padding-left:8px;}
+/* 설정 */
+.setrow{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);}
+.setrow:last-child{border-bottom:none;}
+.setinfo{flex:1;}
+.setname{font-size:15px;font-weight:600;}
+.setdesc{font-size:12px;color:var(--txt2);margin-top:2px;}
+.setbtn{padding:8px 14px;background:transparent;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;color:var(--txt2);cursor:pointer;}
+.setbtn.danger{color:var(--red);border-color:var(--red);}
+/* 운동 편집 */
+.exedit{padding:14px 0;border-bottom:1px solid var(--border);}
+.exedit:last-child{border-bottom:none;}
+.exeditzone{font-size:11px;font-weight:600;color:var(--pd);background:var(--pl);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+.exeditrow{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.exeditrow:last-child{margin-bottom:0;}
+.exeditinp{flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt);}
+.exeditinp:focus{border-color:var(--p);}
+.exsavebtn{padding:8px 14px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;}
+.exdelbtn{padding:6px 10px;background:transparent;color:var(--red);border:1.5px solid var(--red);border-radius:8px;font-size:12px;cursor:pointer;}
+/* 팝업 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.show{display:flex;}
+.popup{background:var(--card);border-radius:24px;padding:28px 22px;width:min(320px,90vw);text-align:center;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{transform:scale(.82);opacity:0;}to{transform:scale(1);opacity:1;}}
+.popemoji{font-size:54px;margin-bottom:10px;}
+.poptitle{font-size:20px;font-weight:700;margin-bottom:6px;}
+.popmsg{font-size:14px;color:var(--txt2);line-height:1.6;}
+.popxp{font-size:24px;font-weight:800;color:var(--a);margin:12px 0 4px;}
+.popbtn{width:100%;padding:14px;background:var(--dark);color:#fff;border:none;border-radius:13px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px;}
+.popbtn2{width:100%;padding:12px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:13px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;}
+.memopop{background:var(--card);border-radius:24px;padding:24px 20px;width:min(340px,92vw);text-align:left;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+.memopoptitle{font-size:18px;font-weight:700;margin-bottom:4px;}
+.memopopdate{font-size:13px;color:var(--txt2);margin-bottom:12px;}
+.memotarea{width:100%;min-height:110px;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;outline:none;resize:none;line-height:1.6;color:var(--txt);background:var(--bg);}
+.memotarea:focus{border-color:var(--p);}
+.addform{background:var(--card);border-radius:24px;padding:24px 20px;width:min(340px,92vw);text-align:left;animation:popIn .3s cubic-bezier(.34,1.56,.64,1);}
+.addformtitle{font-size:18px;font-weight:700;margin-bottom:16px;}
+.addformfield{margin-bottom:10px;}
+.addformlabel{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:4px;}
+.addforminp{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;color:var(--txt);background:var(--bg);}
+.addforminp:focus{border-color:var(--p);}
+.addformrow{display:flex;gap:8px;margin-top:6px;}
+.addformbtn{flex:1;padding:13px;border-radius:11px;font-size:15px;font-weight:600;cursor:pointer;}
+.addformbtn.cancel{background:transparent;border:1.5px solid var(--border);color:var(--txt2);}
+.addformbtn.save{background:var(--dark);border:none;color:#fff;}
+/* 파티클 */
+.particle{position:fixed;pointer-events:none;z-index:400;font-size:18px;animation:pflyup 1.2s ease-out forwards;}
+@keyframes pflyup{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-110px) scale(.4);}}
+.badgepop{position:fixed;pointer-events:none;z-index:400;background:rgba(255,159,10,.13);color:var(--a);font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;animation:badgeup 2.2s ease-out forwards;}
+@keyframes badgeup{0%{opacity:0;transform:translateY(10px);}15%{opacity:1;transform:translateY(0);}75%{opacity:1;}100%{opacity:0;}}
+/* 탭바 */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:var(--tab-h);background:rgba(255,255,255,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;}
+.tabico{font-size:22px;}
+.tablbl{font-size:10px;font-weight:600;color:var(--txt2);}
+.tab.on .tablbl{color:var(--p);}
 </style>
 </head>
 <body>
 
-<!-- ═══ 홈 탭 ═══ -->
+<!-- ══ 홈 탭 ══ -->
 <div class="page active" id="pg-home">
-
-  <!-- 격언 -->
-  <div class="quote-card" onclick="nextQuote()">
-    <button class="quote-btn" onclick="event.stopPropagation();nextQuote()">↻</button>
-    <div class="quote-txt" id="quote-txt"></div>
-    <div class="quote-src" id="quote-src"></div>
+  <div class="qcard" onclick="nextQuote()">
+    <button class="qbtn" onclick="event.stopPropagation();nextQuote()">↻</button>
+    <div class="qtxt" id="qtxt">로딩 중...</div>
+    <div class="qby" id="qby"></div>
   </div>
-
-  <!-- 콤보 배너 (조건부) -->
-  <div class="combo-banner" id="combo-banner" style="display:none">
-    <div><div class="combo-main" id="combo-main"></div><div class="combo-sub" id="combo-sub"></div></div>
-    <div class="combo-badge" id="combo-badge">🔥</div>
+  <div class="cbanner" id="cbanner" style="display:none">
+    <div><div class="cmain" id="cmain"></div><div class="csub" id="csub"></div></div>
+    <div class="cnum" id="cnum">🔥</div>
   </div>
-
-  <!-- 헤더 카드: 프로필·레벨·XP·이행률 링 -->
-  <div class="header-card">
-    <div class="avatar-wrap" onclick="triggerAvatarPick()" title="프로필 사진 변경">
-      <div class="avatar" id="avatar-el"><span style="font-size:26px">🌱</span></div>
+  <div class="hcard">
+    <div class="avatar" id="avatar-el" onclick="triggerAvatar()" title="프로필 사진 변경">
+      <span id="avatar-char" style="font-size:28px">🌱</span>
     </div>
-    <div class="header-info">
-      <div class="header-lv"><span class="header-lv-chip" id="lv-chip">🌱 Lv.1 씨앗</span></div>
-      <div class="header-name">3FIT 유저</div>
-      <div class="xp-row" style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:5px;">
-        <span id="xp-cur-lbl">0 XP</span><span id="xp-need-lbl">다음 레벨까지 100 XP</span>
-      </div>
-      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    <input type="file" accept="image/*" id="avatar-input" style="display:none" onchange="handleAvatar(this)">
+    <div class="hinfo">
+      <div class="lvchip" id="lvchip">🌱 Lv.1 씨앗</div>
+      <div class="hname">3FIT 유저</div>
+      <div class="xprow"><span id="xpcur">0 XP</span><span id="xpnext">다음 레벨까지 100 XP</span></div>
+      <div class="xpbar"><div class="xpfill" id="xpfill" style="width:0%"></div></div>
     </div>
-    <!-- 이행률 링 -->
-    <svg class="ring-svg" width="56" height="56" viewBox="0 0 56 56">
-      <circle fill="none" stroke="#E5E5EA" stroke-width="5" cx="28" cy="28" r="22"/>
-      <circle id="ring-fg" fill="none" stroke="#30D158" stroke-width="5" stroke-linecap="round"
-        cx="28" cy="28" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"
-        transform="rotate(-90 28 28)" style="transition:stroke-dashoffset .55s cubic-bezier(.34,1.56,.64,1)"/>
-    </svg>
+    <div class="ringwrap">
+      <svg width="54" height="54" viewBox="0 0 54 54">
+        <circle fill="none" stroke="#E5E5EA" stroke-width="5" cx="27" cy="27" r="21"/>
+        <circle id="ringfg" fill="none" stroke="#2D8CFF" stroke-width="5" stroke-linecap="round"
+          cx="27" cy="27" r="21" stroke-dasharray="132" stroke-dashoffset="132"
+          transform="rotate(-90 27 27)" style="transition:stroke-dashoffset .55s cubic-bezier(.34,1.56,.64,1)"/>
+      </svg>
+      <div class="ringpct" id="ringpct">0%</div>
+    </div>
   </div>
-
-  <!-- 핵심 3 미션 -->
   <div class="card">
-    <div class="card-title">💎 핵심 3 미션</div>
+    <div class="lbl">💎 핵심 3 미션</div>
     <div id="core-list"></div>
   </div>
-
-  <!-- 보너스 미션 + To-do -->
   <div class="card">
-    <div class="card-title">⭐ 보너스 미션</div>
+    <div class="lbl">⭐ 보너스 미션</div>
     <div id="bonus-list"></div>
-    <hr class="todo-divider">
-    <div class="card-title" style="margin-bottom:10px">📝 오늘 할 일</div>
-    <div class="todo-input-row">
-      <input class="todo-input" id="todo-input" placeholder="할 일 입력..." onkeydown="if(event.key==='Enter')addTodo()">
-      <button class="todo-add-btn" onclick="addTodo()">추가</button>
+    <hr class="tsep">
+    <div class="lbl" style="margin-bottom:10px">📝 오늘 할 일</div>
+    <div class="trow">
+      <input class="tinp" id="tinp" placeholder="할 일 입력..." onkeydown="if(event.key==='Enter')addTodo()">
+      <button class="tadd" onclick="addTodo()">추가</button>
     </div>
     <div id="todo-list"></div>
-    <button class="todo-clean" id="todo-clean" onclick="cleanTodos()" style="display:none">완료 정리</button>
+    <button class="tclean" id="tclean" onclick="cleanTodos()" style="display:none">완료 정리</button>
   </div>
-
-  <!-- 오늘 스탯 -->
   <div class="card">
-    <div class="card-title">📊 오늘 스탯</div>
-    <div class="stat3">
-      <div class="stat3-item"><div class="stat3-val" id="stat-xp">0</div><div class="stat3-lbl">오늘 XP</div></div>
-      <div class="stat3-item"><div class="stat3-val" id="stat-core">0/3</div><div class="stat3-lbl">핵심 달성</div></div>
-      <div class="stat3-item"><div class="stat3-val" id="stat-todo">0</div><div class="stat3-lbl">할 일 완료</div></div>
+    <div class="lbl">📊 오늘 스탯</div>
+    <div class="srow">
+      <div class="sbox"><div class="sval" id="s-xp">0</div><div class="slbl">오늘 XP</div></div>
+      <div class="sbox"><div class="sval" id="s-core">0/3</div><div class="slbl">핵심 달성</div></div>
+      <div class="sbox"><div class="sval" id="s-todo">0</div><div class="slbl">할 일 완료</div></div>
     </div>
   </div>
-
-  <!-- 이번 주 스트릭 -->
   <div class="card">
-    <div class="card-title">🔥 이번 주 스트릭</div>
-    <div class="streak-row" id="streak-row"></div>
-    <div class="streak-count" id="streak-count"></div>
+    <div class="lbl">🔥 이번 주 스트릭</div>
+    <div class="sdots" id="sdots"></div>
+    <div class="snum" id="snum"></div>
   </div>
-
-  <!-- 부위별 운동 -->
-  <!-- zone-tabs 제거 — 카드 내 카테고리 탭으로 통합 -->
-
   <div class="card">
-    <div class="cat-tabs">
-      <div class="ctab on" onclick="setZone('upper',this)">상체 💪</div>
-      <div class="ctab" onclick="setZone('core',this)">허리 🔄</div>
-      <div class="ctab" onclick="setZone('lower',this)">하체 🦵</div>
-      <div class="ctab" onclick="setZone('stretch',this)">스트레칭 🧘</div>
-      <div class="ctab" onclick="setZone('challenge',this)">챌린지 🏆</div>
+    <div class="extabs" id="extabs">
+      <div class="etab on" onclick="setZone('challenge',this)">챌린지 🏆</div>
+      <div class="etab" onclick="setZone('stretch',this)">스트레칭 🧘</div>
+      <div class="etab" onclick="setZone('upper',this)">상체 💪</div>
+      <div class="etab" onclick="setZone('core',this)">허리 🔄</div>
+      <div class="etab" onclick="setZone('lower',this)">하체 🦵</div>
     </div>
     <div id="ex-list"></div>
-    <button class="add-routine-btn" onclick="showAddForm()">＋ 내 루틴 추가</button>
+    <button class="exaddbtn" onclick="showAddEx()">＋ 내 운동 추가</button>
   </div>
-
-  <!-- 오늘 메모 -->
-  <div class="card" id="memo-card-wrap" style="display:none">
-    <div class="card-title">✏️ 오늘의 메모</div>
-    <div class="memo-card">
-      <div class="memo-content" id="memo-display"></div>
-      <button class="memo-edit-btn" onclick="openMemoModal()">수정하기</button>
+  <div class="card" id="memo-card" style="display:none">
+    <div class="lbl">✏️ 오늘의 메모</div>
+    <div class="memobox">
+      <div class="memotxt" id="memotxt"></div>
+      <button class="memoedit" onclick="openMemoPop()">수정하기</button>
     </div>
-  </div>
-
-</div><!-- /pg-home -->
-
-<!-- ═══ 캘린더 탭 ═══ -->
-<div class="page" id="pg-cal">
-  <div class="card" style="margin-top:8px">
-    <div class="cal-nav-row">
-      <button class="cal-nav-btn" onclick="calMove(-1)">‹</button>
-      <div class="cal-month-lbl" id="cal-month-lbl"></div>
-      <button class="cal-nav-btn" onclick="calMove(1)">›</button>
-    </div>
-    <div class="cal-dow" id="cal-dow"></div>
-    <div class="cal-grid" id="cal-grid"></div>
-    <div class="cal-legend">
-      <div class="leg"><div class="leg-dot" style="background:var(--gl)"></div>부분 달성</div>
-      <div class="leg"><div class="leg-dot" style="background:var(--g)"></div>풀콤보</div>
-      <div class="leg"><div class="leg-dot" style="background:var(--g);outline:2px solid var(--p);outline-offset:1px;border-radius:3px"></div>콤보 보너스</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">📊 이달 통계</div>
-    <div class="cal-stat-grid" id="cal-stats"></div>
   </div>
 </div>
 
-<!-- ═══ 성장 탭 ═══ -->
-<div class="page" id="pg-growth">
-  <!-- 캐릭터 현황 -->
-  <div class="char-hero">
-    <div class="char-emoji" id="char-emoji">🌱</div>
-    <div class="char-name" id="char-name">씨앗</div>
-    <div class="char-sub" id="char-sub">첫 발걸음을 내딛는 중</div>
-    <div class="char-xp-bar"><div class="char-xp-fill" id="char-xp-fill" style="width:0%"></div></div>
-    <div class="char-xp-txt" id="char-xp-txt"></div>
+<!-- ══ 캘린더 탭 ══ -->
+<div class="page" id="pg-cal">
+  <div class="card" style="margin-top:10px">
+    <div class="calnav">
+      <button class="calnavbtn" onclick="calMove(-1)">‹</button>
+      <div class="calmonth" id="calmonth"></div>
+      <button class="calnavbtn" onclick="calMove(1)">›</button>
+    </div>
+    <div class="caldow" id="caldow"></div>
+    <div class="calgrid" id="calgrid"></div>
+    <div class="calleg">
+      <div class="callegitem"><div class="callegdot" style="background:var(--gl)"></div>부분 달성</div>
+      <div class="callegitem"><div class="callegdot" style="background:var(--g)"></div>풀콤보</div>
+      <div class="callegitem"><div class="callegdot" style="background:var(--g);outline:2px solid var(--p);outline-offset:1px;border-radius:3px"></div>콤보 보너스</div>
+    </div>
   </div>
-  <!-- 캐릭터 단계 그리드 -->
   <div class="card">
-    <div class="card-title">🎮 캐릭터 성장 단계</div>
-    <div class="char-grid" id="char-grid"></div>
+    <div class="lbl">📊 이달 통계</div>
+    <div class="calstats" id="calstats"></div>
   </div>
-  <!-- 보상 로드맵 -->
+</div>
+
+<!-- ══ 성장 탭 ══ -->
+<div class="page" id="pg-growth">
+  <div class="charhero">
+    <div class="charemoji" id="charemoji">🌱</div>
+    <div class="charname" id="charname">씨앗</div>
+    <div class="charsub" id="charsub">첫 발걸음을 내딛는 중</div>
+    <div class="charxpbar"><div class="charxpfill" id="charxpfill" style="width:0%"></div></div>
+    <div class="charxptxt" id="charxptxt"></div>
+  </div>
+  <div class="card">
+    <div class="lbl">🎮 캐릭터 성장 단계</div>
+    <div class="chargrid" id="chargrid"></div>
+  </div>
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <div class="card-title" style="margin-bottom:0">🎁 보상 로드맵</div>
-      <button class="reward-edit-btn" id="reward-edit-btn" onclick="toggleRewardEdit()">편집</button>
+      <div class="lbl" style="margin-bottom:0">🎁 보상 로드맵</div>
+      <button style="font-size:13px;color:var(--p);background:none;border:none;cursor:pointer;font-weight:600" id="rweditbtn" onclick="toggleRwEdit()">편집</button>
     </div>
-    <div id="reward-list"></div>
+    <div id="rwlist"></div>
   </div>
 </div>
 
-<!-- ═══ 설정 탭 ═══ -->
+<!-- ══ 설정 탭 ══ -->
 <div class="page" id="pg-settings">
-
-  <!-- 프로필 사진 -->
-  <div class="card" style="margin-top:8px">
-    <div class="card-title">👤 프로필 사진</div>
+  <div class="card" style="margin-top:10px">
+    <div class="lbl">👤 프로필 사진</div>
     <div style="display:flex;align-items:center;gap:16px">
-      <div id="settings-avatar" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;flex-shrink:0;cursor:pointer;position:relative" onclick="triggerAvatarPick()">
+      <div id="settings-avatar" onclick="triggerAvatar()"
+        style="width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--g));display:flex;align-items:center;justify-content:center;font-size:34px;overflow:hidden;flex-shrink:0;cursor:pointer;">
         <span id="settings-avatar-char">🌱</span>
       </div>
       <div>
         <div style="font-size:15px;font-weight:600;margin-bottom:6px">프로필 사진 변경</div>
-        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">사진을 선택하면 홈 화면에 바로 반영돼요</div>
-        <button onclick="triggerAvatarPick()" style="padding:8px 16px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">사진 선택</button>
-        <button onclick="clearAvatar()" style="padding:8px 14px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-left:8px">초기화</button>
+        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">홈 아바타를 탭하거나 버튼으로 변경</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="triggerAvatar()" style="padding:8px 16px;background:var(--p);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">사진 선택</button>
+          <button onclick="clearAvatar()" style="padding:8px 14px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">초기화</button>
+        </div>
       </div>
     </div>
-    <input type="file" accept="image/*" id="avatar-file-input" style="display:none" onchange="handleAvatarFile(this)">
   </div>
-
-  <!-- 유튜브 영상 편집 -->
   <div class="card">
-    <div class="card-title">🎬 운동 영상 링크 편집</div>
-    <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6">유튜브 영상이 맞지 않으면 직접 바꿀 수 있어요.<br>유튜브에서 영상을 열고 주소를 복사해서 붙여넣으세요.</div>
-    <div id="yt-edit-list"></div>
+    <div class="lbl">🎬 운동 편집 (이름 · 유튜브 링크)</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6">운동 이름과 유튜브 링크를 직접 바꿀 수 있어요. 저장 버튼을 꼭 눌러주세요.</div>
+    <div id="exeditlist"></div>
   </div>
-
-  <!-- 데이터 관리 -->
   <div class="card">
-    <div class="card-title">⚙️ 데이터 관리</div>
-    <div class="ex-item">
-      <div class="ex-info">
-        <div class="ex-name">오늘 데이터 초기화</div>
-        <div class="ex-desc">오늘 체크·XP만 리셋. 누적 기록은 유지</div>
-      </div>
-      <button onclick="resetToday()" style="padding:7px 14px;background:transparent;color:var(--txt2);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">초기화</button>
+    <div class="lbl">⚙️ 데이터 관리</div>
+    <div class="setrow">
+      <div class="setinfo"><div class="setname">오늘 데이터 초기화</div><div class="setdesc">오늘 체크·XP만 리셋. 누적 기록 유지</div></div>
+      <button class="setbtn" onclick="resetToday()">초기화</button>
     </div>
-    <div class="ex-item" style="border-bottom:none">
-      <div class="ex-info">
-        <div class="ex-name" style="color:#FF3B30">전체 데이터 삭제</div>
-        <div class="ex-desc">모든 기록·XP·스트릭 삭제. 되돌릴 수 없어요</div>
-      </div>
-      <button onclick="resetAll()" style="padding:7px 14px;background:transparent;color:#FF3B30;border:1.5px solid #FF3B30;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">삭제</button>
+    <div class="setrow">
+      <div class="setinfo"><div class="setname" style="color:var(--red)">전체 데이터 삭제</div><div class="setdesc">모든 기록·XP·스트릭 삭제. 복구 불가</div></div>
+      <button class="setbtn danger" onclick="resetAll()">삭제</button>
     </div>
   </div>
-
-  <div style="text-align:center;padding:16px;font-size:12px;color:var(--txt3)">3FIT v2.0 · 앱 100개 챌린지 #3</div>
+  <div style="text-align:center;padding:16px;font-size:12px;color:var(--txt3)">3FIT v2.1 · 앱 100개 챌린지 #3</div>
 </div>
 
-<!-- ═══ 탭바 ═══ -->
+<!-- ══ 탭바 ══ -->
 <nav class="tabbar">
-  <div class="tab on" onclick="goPage('home',this)"><div class="tab-ico">🏠</div><div class="tab-lbl">오늘</div></div>
-  <div class="tab" onclick="goPage('cal',this)"><div class="tab-ico">📅</div><div class="tab-lbl">캘린더</div></div>
-  <div class="tab" onclick="goPage('growth',this)"><div class="tab-ico">🌱</div><div class="tab-lbl">성장</div></div>
-  <div class="tab" onclick="goPage('settings',this)"><div class="tab-ico">⚙️</div><div class="tab-lbl">설정</div></div>
+  <div class="tab on" onclick="goPage('home',this)"><div class="tabico">🏠</div><div class="tablbl">오늘</div></div>
+  <div class="tab" onclick="goPage('cal',this)"><div class="tabico">📅</div><div class="tablbl">캘린더</div></div>
+  <div class="tab" onclick="goPage('growth',this)"><div class="tabico">🌱</div><div class="tablbl">성장</div></div>
+  <div class="tab" onclick="goPage('settings',this)"><div class="tabico">⚙️</div><div class="tablbl">설정</div></div>
 </nav>
 
-<!-- yt-modal 제거됨 — 유튜브 앱 직접 실행 방식으로 변경 -->
-
-<!-- ═══ 완료 팝업 ═══ -->
-<div class="pop-overlay" id="pop-done">
-  <div class="pop">
-    <div class="pop-emoji" id="pop-emoji">🎉</div>
-    <div class="pop-title" id="pop-title">완료!</div>
-    <div class="pop-msg" id="pop-msg"></div>
-    <div class="pop-coin" id="pop-coin">+10 XP</div>
-    <button class="pop-btn" onclick="closePop('pop-done')">계속하기</button>
+<!-- 완료 팝업 -->
+<div class="overlay" id="pop-done">
+  <div class="popup">
+    <div class="popemoji" id="popemoji">🎉</div>
+    <div class="poptitle" id="poptitle">완료!</div>
+    <div class="popmsg" id="popmsg"></div>
+    <div class="popxp" id="popxp">+30 XP</div>
+    <button class="popbtn" onclick="closeOv('pop-done')">계속하기</button>
   </div>
 </div>
-
-<!-- ═══ 풀콤보 팝업 ═══ -->
-<div class="pop-overlay" id="pop-fullcombo">
-  <div class="pop">
-    <div class="pop-emoji">🏆</div>
-    <div class="pop-title" id="fc-title">풀콤보!</div>
-    <div class="pop-msg" id="fc-msg"></div>
-    <div class="pop-coin" id="fc-coin">+50 XP 보너스</div>
-    <button class="pop-btn" onclick="closePop('pop-fullcombo');openMemoModal()">오늘 메모 남기기</button>
-    <button class="pop-btn-outline" onclick="closePop('pop-fullcombo')">나중에</button>
+<!-- 풀콤보 팝업 -->
+<div class="overlay" id="pop-fc">
+  <div class="popup">
+    <div class="popemoji">🏆</div>
+    <div class="poptitle" id="fctitle">풀콤보!</div>
+    <div class="popmsg" id="fcmsg"></div>
+    <div class="popxp" id="fcxp">+50 XP 보너스</div>
+    <button class="popbtn" onclick="closeOv('pop-fc');openMemoPop()">오늘 메모 남기기</button>
+    <button class="popbtn2" onclick="closeOv('pop-fc')">나중에</button>
   </div>
 </div>
-
-<!-- ═══ 메모 모달 ═══ -->
-<div class="pop-overlay" id="pop-memo">
-  <div class="pop" style="text-align:left">
-    <div class="pop-title" style="margin-bottom:4px">✏️ 오늘의 메모</div>
-    <div class="memo-modal-date" id="memo-date"></div>
-    <textarea class="memo-textarea" id="memo-textarea" placeholder="오늘 하루를 기록해보세요..."></textarea>
-    <button class="pop-btn" onclick="saveMemo()" style="margin-top:12px">저장</button>
-    <button class="pop-btn-outline" onclick="closePop('pop-memo')">닫기</button>
+<!-- 메모 팝업 -->
+<div class="overlay" id="pop-memo">
+  <div class="memopop">
+    <div class="memopoptitle">✏️ 오늘의 메모</div>
+    <div class="memopopdate" id="memodate"></div>
+    <textarea class="memotarea" id="memotarea" placeholder="오늘 하루를 기록해보세요..."></textarea>
+    <button class="popbtn" onclick="saveMemo()" style="margin-top:12px">저장</button>
+    <button class="popbtn2" onclick="closeOv('pop-memo')">닫기</button>
   </div>
 </div>
-
-<!-- ═══ 루틴 추가 팝업 ═══ -->
-<div class="pop-overlay" id="pop-add">
-  <div class="form-pop">
-    <div class="form-pop-title">➕ 내 루틴 추가</div>
-    <div class="form-field"><div class="form-label">운동 이름</div><input class="form-input" id="f-name" placeholder="예: 플랭크"></div>
-    <div class="form-field"><div class="form-label">부위</div>
-      <select class="form-input" id="f-zone">
-        <option value="upper">상체</option><option value="core">허리·코어</option>
-        <option value="lower">하체</option><option value="stretch">스트레칭</option>
+<!-- 운동 추가 팝업 -->
+<div class="overlay" id="pop-addex">
+  <div class="addform">
+    <div class="addformtitle">➕ 내 운동 추가</div>
+    <div class="addformfield"><div class="addformlabel">운동 이름</div><input class="addforminp" id="addname" placeholder="예: 버피"></div>
+    <div class="addformfield"><div class="addformlabel">카테고리</div>
+      <select class="addforminp" id="addzone">
         <option value="challenge">챌린지</option>
+        <option value="stretch">스트레칭</option>
+        <option value="upper">상체</option>
+        <option value="core">허리·코어</option>
+        <option value="lower">하체</option>
       </select>
     </div>
-    <div style="display:flex;gap:8px">
-      <div class="form-field" style="flex:1"><div class="form-label">단위</div><input class="form-input" id="f-unit" placeholder="회, 초, 분"></div>
-      <div class="form-field" style="flex:1"><div class="form-label">XP</div><input class="form-input" id="f-coin" type="number" placeholder="10" value="10"></div>
-    </div>
-    <div class="form-field"><div class="form-label">유튜브 링크 (선택)</div><input class="form-input" id="f-yt" placeholder="https://youtu.be/..."></div>
-    <div class="form-row">
-      <button class="form-btn cancel" onclick="closePop('pop-add')">취소</button>
-      <button class="form-btn save" onclick="saveCustomEx()">추가</button>
+    <div class="addformfield"><div class="addformlabel">유튜브 링크 (선택)</div><input class="addforminp" id="addyt" placeholder="https://youtu.be/..."></div>
+    <div class="addformfield"><div class="addformlabel">XP</div><input class="addforminp" id="addxp" type="number" value="10"></div>
+    <div class="addformrow">
+      <button class="addformbtn cancel" onclick="closeOv('pop-addex')">취소</button>
+      <button class="addformbtn save" onclick="saveNewEx()">추가</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  데이터 상수
-// ═══════════════════════════════════════════════════════════
 const QUOTES=[
-  {t:"시작이 반이다.",s:"아리스토텔레스"},
-  {t:"한 번에 한 걸음씩. 결국 정상에 선다.",s:"노자"},
-  {t:"고통은 지나가지만, 포기는 영원히 남는다.",s:"랜스 암스트롱"},
-  {t:"몸이 건강해야 정신도 건강하다.",s:"유베날리스"},
-  {t:"지금 게으른 자는 내일 더 힘들다.",s:"히포크라테스"},
-  {t:"완벽하지 않아도 좋다. 꾸준함이 이긴다.",s:"워런 버핏"},
-  {t:"작은 습관이 큰 변화를 만든다.",s:"제임스 클리어"},
-  {t:"움직임이 곧 약이다.",s:"히포크라테스"},
-  {t:"오늘 할 수 있는 일을 내일로 미루지 마라.",s:"벤자민 프랭클린"},
-  {t:"성공은 매일 반복하는 작은 노력의 합이다.",s:"로버트 콜리어"},
-  {t:"땀 한 방울이 자신감 한 방울이다.",s:"무명"},
-  {t:"몸을 단련하면 의지도 함께 단련된다.",s:"니체"},
-  {t:"최고의 운동은 지금 하는 운동이다.",s:"무명"},
-  {t:"규칙이 자유를 만든다.",s:"스티브 잡스"},
-  {t:"매일 조금씩, 결국 멀리.",s:"공자"},
-  {t:"몸은 거짓말하지 않는다.",s:"마사 그래험"},
-  {t:"꾸준함 앞에 재능은 없다.",s:"무명"},
-  {t:"어제의 나를 오늘 이겨라.",s:"무명"},
-  {t:"한 번 더, 딱 한 번 더.",s:"아놀드 슈워제네거"},
-  {t:"3분 투자, 하루 보상.",s:"3FIT"},
-  {t:"성공한 사람들은 기분이 좋을 때만 하지 않는다.",s:"무명"},
-  {t:"포기할 이유보다 계속할 이유가 더 많다.",s:"무명"},
-  {t:"당신이 쉬는 사이 누군가는 훈련한다.",s:"무명"},
-  {t:"몸을 바꾸기 전에 마음을 바꿔라.",s:"무명"},
-  {t:"루틴이 곧 삶이다.",s:"무명"},
-  {t:"3가지만. 오늘도 충분히 훌륭하다.",s:"3FIT"},
-  {t:"근육은 기억한다. 꾸준히 새겨라.",s:"무명"},
-  {t:"오늘의 루틴이 내일의 실력이다.",s:"무명"},
-  {t:"작게 시작해도 된다. 멈추지만 마라.",s:"무명"},
-  {t:"습관은 만들어지는 것이 아니라 쌓이는 것.",s:"무명"},
+  {t:'시작이 반이다.',s:'아리스토텔레스'},{t:'한 번에 한 걸음씩. 결국 정상에 선다.',s:'노자'},
+  {t:'고통은 지나가지만, 포기는 영원히 남는다.',s:'랜스 암스트롱'},{t:'완벽하지 않아도 좋다. 꾸준함이 이긴다.',s:'워런 버핏'},
+  {t:'작은 습관이 큰 변화를 만든다.',s:'제임스 클리어'},{t:'움직임이 곧 약이다.',s:'히포크라테스'},
+  {t:'오늘 할 수 있는 일을 내일로 미루지 마라.',s:'벤자민 프랭클린'},{t:'성공은 매일 반복하는 작은 노력의 합이다.',s:'로버트 콜리어'},
+  {t:'땀 한 방울이 자신감 한 방울이다.',s:'무명'},{t:'몸을 단련하면 의지도 함께 단련된다.',s:'니체'},
+  {t:'최고의 운동은 지금 하는 운동이다.',s:'무명'},{t:'규칙이 자유를 만든다.',s:'스티브 잡스'},
+  {t:'매일 조금씩, 결국 멀리.',s:'공자'},{t:'몸은 거짓말하지 않는다.',s:'마사 그래험'},
+  {t:'꾸준함 앞에 재능은 없다.',s:'무명'},{t:'어제의 나를 오늘 이겨라.',s:'무명'},
+  {t:'한 번 더, 딱 한 번 더.',s:'아놀드 슈워제네거'},{t:'3분 투자, 하루 보상.',s:'3FIT'},
+  {t:'포기할 이유보다 계속할 이유가 더 많다.',s:'무명'},{t:'당신이 쉬는 사이 누군가는 훈련한다.',s:'무명'},
+  {t:'루틴이 곧 삶이다.',s:'무명'},{t:'3가지만. 오늘도 충분히 훌륭하다.',s:'3FIT'},
+  {t:'근육은 기억한다. 꾸준히 새겨라.',s:'무명'},{t:'오늘의 루틴이 내일의 실력이다.',s:'무명'},
+  {t:'작게 시작해도 된다. 멈추지만 마라.',s:'무명'},{t:'습관은 쌓이는 것이다.',s:'무명'},
+  {t:'몸이 건강해야 생각도 맑아진다.',s:'무명'},{t:'지금 게으른 자는 내일 더 힘들다.',s:'히포크라테스'},
+  {t:'성공한 사람들은 기분이 좋을 때만 하지 않는다.',s:'무명'},{t:'몸을 바꾸기 전에 마음을 바꿔라.',s:'무명'},
 ];
-
-const CORE_MISSIONS=[
-  {id:'c1',emoji:'💪',name:'상체 운동 3분',desc:'푸쉬업 or 턱걸이',xp:30,msgs:['상체가 단단해지고 있어요 💪','뛰어난 집중력이에요! 어깨가 넓어지는 소리가 들려요','오늘도 상체 루틴 클리어! 💎']},
-  {id:'c2',emoji:'🔄',name:'코어 & 하체 3분',desc:'플랭크 or 스쿼트',xp:30,msgs:['코어가 불타고 있어요 🔥','기초가 탄탄해지고 있어요! 대단해요','하체 루틴 완료! 뿌듯하죠? ⚡']},
-  {id:'c3',emoji:'❤️',name:'유산소 & 스트레칭',desc:'제자리뛰기 or 스트레칭',xp:30,msgs:['심폐가 강해지고 있어요 ❤️','몸이 유연해지는 중이에요! 멋져요','마무리까지 완벽해요 🌟']},
+const CORES=[
+  {id:'c1',emoji:'💪',name:'상체 운동 3분',desc:'푸쉬업 or 턱걸이',xp:30,msgs:['상체가 단단해지고 있어요 💪','어깨가 넓어지는 소리가 들려요!','상체 루틴 클리어! 💎','최고예요! 가슴이 불타고 있어요 🔥','오늘도 해냈어요! ✨']},
+  {id:'c2',emoji:'🔄',name:'코어 & 하체 3분',desc:'플랭크 or 스쿼트',xp:30,msgs:['코어가 불타고 있어요 🔥','기초가 탄탄해지고 있어요!','하체 루틴 완료! 뿌듯하죠? ⚡','다리가 강해지고 있어요 💪','완벽한 집중력이에요! 🌟']},
+  {id:'c3',emoji:'❤️',name:'유산소 & 스트레칭',desc:'제자리뛰기 or 스트레칭',xp:30,msgs:['심폐가 강해지고 있어요 ❤️','몸이 유연해지는 중이에요!','마무리까지 완벽해요 🌟','혈액순환이 좋아지고 있어요 ✨','오늘 3분, 내일의 나에게 선물 💝']},
 ];
-
-const BONUS_MISSIONS=[
-  {id:'b1',emoji:'🚶',name:'산책 or 걷기 10분',xp:15,msgs:['걷기만 해도 충분해요 🚶','자연 속 운동, 최고예요!','오늘 걷기 완료!']},
+const BONUS=[
+  {id:'b1',emoji:'🚶',name:'산책 or 걷기 10분',xp:15,msgs:['걷기만 해도 충분해요 🚶','자연 속 운동 최고!','오늘 걷기 완료!']},
   {id:'b2',emoji:'💧',name:'물 2L & 수면 7시간',xp:15,msgs:['몸이 촉촉해지고 있어요 💧','수분 보충 완벽해요!','건강 루틴 달성!']},
-  {id:'b3',emoji:'🧘',name:'명상 or 호흡 3분',xp:15,msgs:['마음이 고요해지고 있어요 🧘','정신 건강도 중요해요!','몸과 마음 모두 케어 완료!']},
+  {id:'b3',emoji:'🧘',name:'명상 or 호흡 3분',xp:15,msgs:['마음이 고요해지고 있어요 🧘','정신 건강도 중요해요!','몸과 마음 케어 완료!']},
 ];
-
-// 기본 운동 데이터 (desc 제거, 챌린지 카테고리 추가)
-const DEFAULT_EXERCISES=[
-  // 상체
-  {id:'e1',name:'턱걸이 정자세',zone:'upper',cat:'strength',unit:'회',xp:8,yt:'nWhS28U6bCY'},
-  {id:'e2',name:'턱걸이 초보 루틴',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'wyCLYroscSM'},
-  {id:'e3',name:'푸쉬업 자세',zone:'upper',cat:'strength',unit:'회',xp:6,yt:'8txh_smTqPA'},
-  // 허리·코어
-  {id:'e4',name:'플랭크 정석',zone:'core',cat:'strength',unit:'초',xp:7,yt:'Zq8nRY9P_cM'},
-  {id:'e5',name:'플랭크 허리 건강',zone:'core',cat:'strength',unit:'초',xp:7,yt:'opjhqOYNFJE'},
-  {id:'e6',name:'뱃살 코어 운동',zone:'core',cat:'strength',unit:'분',xp:6,yt:'JkQJCiHOPTQ'},
-  // 하체
-  {id:'e7',name:'스쿼트·런지 자세',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'0LSfy60yRpM'},
-  {id:'e8',name:'런지 기본기',zone:'lower',cat:'strength',unit:'회',xp:6,yt:'iMoW5neyRFk'},
-  {id:'e9',name:'맨몸 하체 루틴',zone:'lower',cat:'strength',unit:'회',xp:7,yt:'Ij5b22zQss0'},
-  // 스트레칭
-  {id:'e10',name:'13분 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'5J2a4uUrY2U'},
-  {id:'e11',name:'골반 체형 교정',zone:'stretch',cat:'stretch',unit:'분',xp:5,yt:'nQlbDogfCpE'},
-  {id:'e12',name:'운동 전 전신 스트레칭',zone:'stretch',cat:'stretch',unit:'분',xp:4,yt:'oquaP1cFBqY'},
-  // 챌린지
-  {id:'e13',name:'푸쉬업 100개 챌린지',zone:'challenge',cat:'challenge',unit:'회',xp:20,yt:'HBLGAgS8DhQ'},
-  {id:'e14',name:'30일 플랭크 챌린지',zone:'challenge',cat:'challenge',unit:'초',xp:20,yt:'SIO3FQPlqN4'},
-  {id:'e15',name:'맨몸 전신 10분',zone:'challenge',cat:'challenge',unit:'분',xp:15,yt:'W7ujfRLNsu4'},
+const FC_MSGS=['오늘 3개 봉우리 정복 완료! 👑','완벽한 하루예요! 당신은 챔피언 🏆','3FIT 풀콤보! 몸이 고마워해요 💎','대단해요! 꾸준함이 당신을 만들어요 ⚡','오늘도 해냈어요! 자랑스럽습니다 🌟','풀콤보 달성! 이 기분 기억하세요 🔥'];
+const DEFAULT_EX=[
+  {id:'e1',zone:'challenge',name:'푸쉬업 100개 챌린지',xp:20,yt:'HBLGAgS8DhQ'},
+  {id:'e2',zone:'challenge',name:'30일 플랭크 챌린지',xp:20,yt:'SIO3FQPlqN4'},
+  {id:'e3',zone:'challenge',name:'맨몸 전신 10분',xp:15,yt:'W7ujfRLNsu4'},
+  {id:'e4',zone:'stretch',name:'13분 전신 스트레칭',xp:5,yt:'5J2a4uUrY2U'},
+  {id:'e5',zone:'stretch',name:'골반 체형 교정',xp:5,yt:'nQlbDogfCpE'},
+  {id:'e6',zone:'stretch',name:'운동 전 전신 스트레칭',xp:4,yt:'oquaP1cFBqY'},
+  {id:'e7',zone:'upper',name:'턱걸이 정자세',xp:8,yt:'nWhS28U6bCY'},
+  {id:'e8',zone:'upper',name:'턱걸이 초보 루틴',xp:6,yt:'wyCLYroscSM'},
+  {id:'e9',zone:'upper',name:'푸쉬업 자세',xp:6,yt:'8txh_smTqPA'},
+  {id:'e10',zone:'core',name:'플랭크 정석',xp:7,yt:'Zq8nRY9P_cM'},
+  {id:'e11',zone:'core',name:'플랭크 허리 건강',xp:7,yt:'opjhqOYNFJE'},
+  {id:'e12',zone:'core',name:'뱃살 코어 운동',xp:6,yt:'JkQJCiHOPTQ'},
+  {id:'e13',zone:'lower',name:'스쿼트·런지 자세',xp:7,yt:'0LSfy60yRpM'},
+  {id:'e14',zone:'lower',name:'런지 기본기',xp:6,yt:'iMoW5neyRFk'},
+  {id:'e15',zone:'lower',name:'맨몸 하체 루틴',xp:7,yt:'Ij5b22zQss0'},
 ];
-
-const CHARS=[
-  {emoji:'🌱',name:'씨앗',sub:'첫 발걸음을 내딛는 중',lvMin:1,lvMax:9},
-  {emoji:'🌿',name:'새싹',sub:'성장이 눈에 보이기 시작',lvMin:10,lvMax:24},
-  {emoji:'🌳',name:'나무',sub:'단단한 루틴이 자리잡다',lvMin:25,lvMax:49},
-  {emoji:'⚡',name:'번개',sub:'행동이 습관이 된 사람',lvMin:50,lvMax:74},
-  {emoji:'🔥',name:'불꽃',sub:'멈출 수 없는 에너지',lvMin:75,lvMax:99},
-  {emoji:'👑',name:'레전드',sub:'육체와 정신 모두 정복',lvMin:100,lvMax:999},
-];
-
-const FC_MSGS=[
-  '오늘 3개 봉우리 정복 완료! 👑',
-  '완벽한 하루예요! 당신은 챔피언 🏆',
-  '3FIT 풀콤보! 몸이 고마워해요 💎',
-  '대단해요! 꾸준함이 당신을 만들어요 ⚡',
-  '오늘도 해냈어요! 자랑스럽습니다 🌟',
-  '풀콤보 달성! 이 기분, 기억하세요 🔥',
-];
-
-const DEFAULT_REWARDS=[
+const DEFAULT_RW=[
   {lv:10,name:'☕ 카페 상품권 1만원',msg:'첫 보상! 커피 한 잔으로 자축하세요.'},
   {lv:20,name:'📚 책 구매권',msg:'지식이 쌓이는 만큼 책도 늘려요.'},
   {lv:35,name:'👟 운동화 구매권',msg:'장비도 레벨업!'},
@@ -596,68 +486,44 @@ const DEFAULT_REWARDS=[
   {lv:80,name:'💎 고급 악세서리 or 가전',msg:'정상이 눈앞이에요!'},
   {lv:100,name:'📱 아이폰 — 최고 보상',msg:'당신은 진짜 해냈습니다. 레전드!'},
 ];
+const CHARS=[
+  {emoji:'🌱',name:'씨앗',sub:'첫 발걸음을 내딛는 중',min:1,max:9},
+  {emoji:'🌿',name:'새싹',sub:'성장이 눈에 보이기 시작',min:10,max:24},
+  {emoji:'🌳',name:'나무',sub:'단단한 루틴이 자리잡다',min:25,max:49},
+  {emoji:'⚡',name:'번개',sub:'행동이 습관이 된 사람',min:50,max:74},
+  {emoji:'🔥',name:'불꽃',sub:'멈출 수 없는 에너지',min:75,max:99},
+  {emoji:'👑',name:'레전드',sub:'육체와 정신 모두 정복',min:100,max:999},
+];
 
-// ═══════════════════════════════════════════════════════════
-//  상태 로드·저장
-// ═══════════════════════════════════════════════════════════
-const KEY='3fit_v1';
-function loadDB(){
-  const def={
-    totalXP:0,todayXP:0,streak:0,lastDate:'',
-    coreChecked:[0,0,0],bonusChecked:[0,0,0],
-    exChecked:{},exInputs:{},todos:[],todayMemo:'',
-    history:{},avatar:'',quoteIdx:0,
-    rewards:JSON.parse(JSON.stringify(DEFAULT_REWARDS)),
-    ytOverrides:{},
-    // 운동 데이터 DB 저장 (편집 영구 반영)
-    exercises: JSON.parse(JSON.stringify(DEFAULT_EXERCISES)),
-  };
-  try{
-    const saved=JSON.parse(localStorage.getItem(KEY)||'{}');
-    const merged=Object.assign(def,saved);
-    // 기존 저장 데이터에 exercises 없으면 기본값 사용
-    if(!saved.exercises) merged.exercises=JSON.parse(JSON.stringify(DEFAULT_EXERCISES));
-    return merged;
-  }catch{return def;}
-}
-function saveDB(){localStorage.setItem(KEY,JSON.stringify(DB));}
+// DB
+const KEY='3fit_v2';
+function defDB(){return{totalXP:0,todayXP:0,streak:0,lastDate:'',coreChecked:[0,0,0],bonusChecked:[0,0,0],exChecked:{},todos:[],todayMemo:'',history:{},avatar:'',quoteIdx:0,exercises:JSON.parse(JSON.stringify(DEFAULT_EX)),rewards:JSON.parse(JSON.stringify(DEFAULT_RW))};}
+function loadDB(){try{const s=JSON.parse(localStorage.getItem(KEY)||'{}');const d=defDB();Object.assign(d,s);if(!s.exercises||!s.exercises.length)d.exercises=JSON.parse(JSON.stringify(DEFAULT_EX));if(!s.rewards||!s.rewards.length)d.rewards=JSON.parse(JSON.stringify(DEFAULT_RW));return d;}catch{return defDB();}}
+function saveDB(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){}}
 let DB=loadDB();
-// 편의 함수: DB.exercises 항상 참조
-function allExercises(){return DB.exercises||[];}
 
-// ═══════════════════════════════════════════════════════════
-//  자정 초기화
-// ═══════════════════════════════════════════════════════════
+// 유틸
 function todayKey(){const d=new Date();return`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;}
+function getLv(xp){let lv=1,acc=0,need=100;while(xp>=acc+need&&lv<100){acc+=need;lv++;need=lv*100;}const ch=CHARS.filter(c=>lv>=c.min&&lv<=c.max)[0]||CHARS[CHARS.length-1];return{lv,char:ch,cur:xp-acc,need,pct:Math.min((xp-acc)/need*100,100)};}
+function extractYt(u){const m=u.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+
+// 자정 초기화
 function checkReset(){
   const today=todayKey();
   if(DB.lastDate===today)return;
   if(DB.lastDate){
-    const coreDone=DB.coreChecked.filter(Boolean).length;
-    const anyDone=coreDone>0||DB.bonusChecked.some(Boolean)||Object.values(DB.exChecked).some(Boolean);
-    DB.history[DB.lastDate]={core:coreDone,full:coreDone===3,xp:DB.todayXP,streak:DB.streak,combo:DB.history[DB.lastDate]?.combo||false,memo:DB.todayMemo};
-    if(anyDone){DB.streak++;}else{DB.streak=0;}
+    const cd=DB.coreChecked.filter(Boolean).length;
+    const any=cd>0||DB.bonusChecked.some(Boolean)||Object.values(DB.exChecked).some(Boolean);
+    DB.history[DB.lastDate]={core:cd,full:cd===3,xp:DB.todayXP,combo:DB.history[DB.lastDate]?.combo||false,memo:DB.todayMemo};
+    DB.streak=any?DB.streak+1:0;
   }
-  DB.coreChecked=[0,0,0];DB.bonusChecked=[0,0,0];
-  DB.exChecked={};DB.exInputs={};DB.todayXP=0;DB.todayMemo='';
+  DB.coreChecked=[0,0,0];DB.bonusChecked=[0,0,0];DB.exChecked={};DB.todayXP=0;DB.todayMemo='';
   DB.todos=DB.todos.filter(t=>!t.done);
-  DB.lastDate=today;
-  saveDB();
+  DB.lastDate=today;saveDB();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  레벨 계산
-// ═══════════════════════════════════════════════════════════
-function getLv(xp){
-  let lv=1,acc=0,need=100;
-  while(xp>=acc+need){acc+=need;lv++;need=lv*100;if(lv>=100)break;}
-  const ch=CHARS.filter(c=>lv>=c.lvMin&&lv<=c.lvMax)[0]||CHARS[CHARS.length-1];
-  return{lv,char:ch,cur:xp-acc,need,pct:(xp-acc)/need*100};
-}
-
-// ═══════════════════════════════════════════════════════════
-//  페이지 전환
-// ═══════════════════════════════════════════════════════════
+// 페이지 전환
 function goPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -668,600 +534,265 @@ function goPage(id,el){
   if(id==='settings')renderSettings();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  격언
-// ═══════════════════════════════════════════════════════════
-function nextQuote(){
-  DB.quoteIdx=(DB.quoteIdx+1)%QUOTES.length;
-  renderQuote();saveDB();
-}
-function renderQuote(){
-  const q=QUOTES[DB.quoteIdx%QUOTES.length];
-  document.getElementById('quote-txt').textContent=q.t;
-  document.getElementById('quote-src').textContent='— '+q.s;
-}
+// 격언
+function renderQuote(){const q=QUOTES[DB.quoteIdx%QUOTES.length];document.getElementById('qtxt').textContent=q.t;document.getElementById('qby').textContent='— '+q.s;}
+function nextQuote(){DB.quoteIdx=(DB.quoteIdx+1)%QUOTES.length;renderQuote();saveDB();}
 
-// ═══════════════════════════════════════════════════════════
-//  헤더·XP·링 업데이트
-// ═══════════════════════════════════════════════════════════
+// 헤더
 function updateHeader(){
   const li=getLv(DB.totalXP);
-  document.getElementById('lv-chip').textContent=`${li.char.emoji} Lv.${li.lv} ${li.char.name}`;
-  document.getElementById('xp-fill').style.width=li.pct+'%';
-  document.getElementById('xp-cur-lbl').textContent=`${li.cur} XP`;
-  document.getElementById('xp-need-lbl').textContent=`다음 레벨까지 ${li.need-li.cur} XP`;
-  document.getElementById('avatar-char').textContent=DB.avatar?'':li.char.emoji;
-
-  // 이행률 링 (핵심 미션 기준)
-  const coreDone=DB.coreChecked.filter(Boolean).length;
-  const pct=coreDone/3;
-  const circ=138.2;
-  document.getElementById('ring-fg').style.strokeDashoffset=circ-circ*pct;
-  document.getElementById('ring-fg').style.stroke=pct===1?'#30D158':'#2D8CFF';
+  document.getElementById('lvchip').textContent=`${li.char.emoji} Lv.${li.lv} ${li.char.name}`;
+  document.getElementById('xpfill').style.width=li.pct+'%';
+  document.getElementById('xpcur').textContent=`${li.cur} XP`;
+  document.getElementById('xpnext').textContent=`다음 레벨까지 ${li.need-li.cur} XP`;
+  const done=DB.coreChecked.filter(Boolean).length;
+  const pct=done/3;const circ=132;
+  document.getElementById('ringfg').style.strokeDashoffset=circ-circ*pct;
+  document.getElementById('ringfg').style.stroke=pct===1?'#30D158':'#2D8CFF';
+  document.getElementById('ringpct').textContent=Math.round(pct*100)+'%';
 }
 
-// ═══════════════════════════════════════════════════════════
-//  핵심 미션
-// ═══════════════════════════════════════════════════════════
+// 핵심 미션
 function renderCore(){
-  document.getElementById('core-list').innerHTML=CORE_MISSIONS.map((m,i)=>{
+  document.getElementById('core-list').innerHTML=CORES.map((m,i)=>{
     const done=DB.coreChecked[i];
-    return`<div class="ex-item">
-      <div class="ex-chk ${done?'done':''}" onclick="toggleCore(${i})">${done?'✓':''}</div>
-      <div class="ex-info">
-        <div class="ex-name ${done?'done':''}">${m.emoji} ${m.name}</div>
-        <div class="ex-desc">${m.desc}</div>
-      </div>
-      <div class="ex-coin">+${m.xp} XP</div>
+    return`<div class="mitem">
+      <div class="cchk ${done?'done':''}" onclick="toggleCore(${i})">${done?'✓':''}</div>
+      <div class="minfo"><div class="mname ${done?'done':''}">${m.emoji} ${m.name}</div><div class="mdesc">${m.desc}</div></div>
+      <div class="xpbadge">+${m.xp} XP</div>
     </div>`;
   }).join('');
 }
-
 function toggleCore(i){
   const was=DB.coreChecked[i];
-  if(was){DB.coreChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-CORE_MISSIONS[i].xp);DB.todayXP=Math.max(0,DB.todayXP-CORE_MISSIONS[i].xp);}
+  if(was){DB.coreChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-CORES[i].xp);DB.todayXP=Math.max(0,DB.todayXP-CORES[i].xp);}
   else{
-    DB.coreChecked[i]=1;DB.totalXP+=CORE_MISSIONS[i].xp;DB.todayXP+=CORE_MISSIONS[i].xp;
-    showBadge('+'+CORE_MISSIONS[i].xp+' XP');
-    spawnParticles(8);
-    const msgs=CORE_MISSIONS[i].msgs;
-    setTimeout(()=>showDonePopup(CORE_MISSIONS[i].emoji+' '+CORE_MISSIONS[i].name,msgs[Math.floor(Math.random()*msgs.length)],CORE_MISSIONS[i].xp),300);
-    // 풀콤보 체크
-    setTimeout(()=>{
-      const newDone=[...DB.coreChecked];newDone[i]=1;
-      if(newDone.every(Boolean)&&!DB.history[todayKey()]?.full){
-        DB.totalXP+=50;DB.todayXP+=50;
-        saveDB();
-        setTimeout(()=>showFullCombo(),1200);
-      }
-    },100);
+    DB.coreChecked[i]=1;DB.totalXP+=CORES[i].xp;DB.todayXP+=CORES[i].xp;
+    spawnP(8);showBadge('+'+CORES[i].xp+' XP');
+    const msg=rnd(CORES[i].msgs);
+    setTimeout(()=>showDonePop(CORES[i].emoji+' '+CORES[i].name,msg,CORES[i].xp),200);
+    const nxt=[...DB.coreChecked];nxt[i]=1;
+    if(nxt.every(Boolean)){DB.totalXP+=50;DB.todayXP+=50;saveDB();setTimeout(()=>showFC(),1400);}
   }
   saveDB();renderCore();updateHeader();updateStats();renderStreak();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  보너스 미션
-// ═══════════════════════════════════════════════════════════
+// 보너스 미션
 function renderBonus(){
-  document.getElementById('bonus-list').innerHTML=BONUS_MISSIONS.map((m,i)=>{
+  document.getElementById('bonus-list').innerHTML=BONUS.map((m,i)=>{
     const done=DB.bonusChecked[i];
-    return`<div class="ex-item">
-      <div class="bonus-chk ${done?'done':''}" onclick="toggleBonus(${i})">${done?'✓':''}</div>
-      <div class="ex-info">
-        <div class="ex-name ${done?'done':''}">${m.emoji} ${m.name}</div>
-      </div>
-      <div class="ex-coin">+${m.xp} XP</div>
+    return`<div class="mitem">
+      <div class="bchk ${done?'done':''}" onclick="toggleBonus(${i})">${done?'✓':''}</div>
+      <div class="minfo"><div class="mname ${done?'done':''}">${m.emoji} ${m.name}</div></div>
+      <div class="xpbadge">+${m.xp} XP</div>
     </div>`;
   }).join('');
 }
-
 function toggleBonus(i){
   const was=DB.bonusChecked[i];
-  if(was){DB.bonusChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-BONUS_MISSIONS[i].xp);DB.todayXP=Math.max(0,DB.todayXP-BONUS_MISSIONS[i].xp);}
-  else{
-    DB.bonusChecked[i]=1;DB.totalXP+=BONUS_MISSIONS[i].xp;DB.todayXP+=BONUS_MISSIONS[i].xp;
-    showBadge('+'+BONUS_MISSIONS[i].xp+' XP');spawnParticles(6);
-    const msgs=BONUS_MISSIONS[i].msgs;
-    setTimeout(()=>showDonePopup(BONUS_MISSIONS[i].emoji+' '+BONUS_MISSIONS[i].name,msgs[Math.floor(Math.random()*msgs.length)],BONUS_MISSIONS[i].xp),300);
-  }
+  if(was){DB.bonusChecked[i]=0;DB.totalXP=Math.max(0,DB.totalXP-BONUS[i].xp);DB.todayXP=Math.max(0,DB.todayXP-BONUS[i].xp);}
+  else{DB.bonusChecked[i]=1;DB.totalXP+=BONUS[i].xp;DB.todayXP+=BONUS[i].xp;spawnP(6);showBadge('+'+BONUS[i].xp+' XP');setTimeout(()=>showDonePop(BONUS[i].emoji+' '+BONUS[i].name,rnd(BONUS[i].msgs),BONUS[i].xp),200);}
   saveDB();renderBonus();updateHeader();updateStats();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  운동 목록 (부위별)
-// ═══════════════════════════════════════════════════════════
-let curZone='upper',curCat='all';
-function setZone(z,el){
-  curZone=z;
-  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  renderEx();
-}
-function setCat(c,el){curCat=c;document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderEx();}
-
-function getFilteredEx(){
-  return allExercises().filter(e=>e.zone===curZone);
-}
-
-function renderEx(){
-  const list=getFilteredEx();
-  const el=document.getElementById('ex-list');
-  if(!list.length){el.innerHTML=`<div style="color:var(--txt2);text-align:center;padding:20px 0;font-size:14px">운동이 없어요</div>`;return;}
-  el.innerHTML=list.map(e=>{
-    const done=DB.exChecked[e.id];
-    const ytId=e.yt||'';
-    const ytBtn=ytId
-      ? `<button class="yt-btn" onclick="openYT('${e.id}','${e.name}')" title="유튜브 영상 열기"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`
-      : `<button class="yt-btn no-yt" onclick="goPage('settings',document.querySelectorAll('.tab')[3])" title="영상 없음 — 설정에서 추가"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`;
-    return`<div class="ex-item">
-      <div class="ex-chk ${done?'done':''}" onclick="toggleEx('${e.id}',${e.xp})">${done?'✓':''}</div>
-      <div class="ex-info">
-        <div class="ex-name ${done?'done':''}">${e.name}</div>
-      </div>
-      <div class="ex-right">
-        ${ytBtn}
-        <div class="ex-coin">+${e.xp}XP</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function toggleEx(id,xp){
-  if(DB.exChecked[id]){DB.exChecked[id]=false;DB.totalXP=Math.max(0,DB.totalXP-xp);DB.todayXP=Math.max(0,DB.todayXP-xp);}
-  else{DB.exChecked[id]=true;DB.totalXP+=xp;DB.todayXP+=xp;showBadge('+'+xp+' XP');spawnParticles(6);}
-  saveDB();renderEx();updateHeader();updateStats();
-}
-
-// ═══════════════════════════════════════════════════════════
-//  To-do
-// ═══════════════════════════════════════════════════════════
-function addTodo(){
-  const inp=document.getElementById('todo-input');
-  const txt=inp.value.trim();if(!txt)return;
-  DB.todos.unshift({id:Date.now(),text:txt,done:false});
-  inp.value='';saveDB();renderTodos();
-}
-function toggleTodo(id){
-  const t=DB.todos.find(t=>t.id===id);if(!t)return;
-  if(!t.done){t.done=true;DB.totalXP+=10;DB.todayXP+=10;showBadge('+10 XP');}
-  else{t.done=false;DB.totalXP=Math.max(0,DB.totalXP-10);DB.todayXP=Math.max(0,DB.todayXP-10);}
-  saveDB();renderTodos();updateHeader();updateStats();
-}
-function deleteTodo(id){DB.todos=DB.todos.filter(t=>t.id!==id);saveDB();renderTodos();}
-function cleanTodos(){DB.todos=DB.todos.filter(t=>!t.done);saveDB();renderTodos();}
+// Todo
+function addTodo(){const inp=document.getElementById('tinp');const t=inp.value.trim();if(!t)return;DB.todos.unshift({id:Date.now(),text:t,done:false});inp.value='';saveDB();renderTodos();}
+function toggleTodo(id){const t=DB.todos.find(x=>x.id===id);if(!t)return;if(!t.done){t.done=true;DB.totalXP+=10;DB.todayXP+=10;showBadge('+10 XP');}else{t.done=false;DB.totalXP=Math.max(0,DB.totalXP-10);DB.todayXP=Math.max(0,DB.todayXP-10);}saveDB();renderTodos();updateHeader();updateStats();}
+function deleteTodo(id){DB.todos=DB.todos.filter(x=>x.id!==id);saveDB();renderTodos();}
+function cleanTodos(){DB.todos=DB.todos.filter(x=>!x.done);saveDB();renderTodos();}
 function renderTodos(){
-  const el=document.getElementById('todo-list');
-  const hasDone=DB.todos.some(t=>t.done);
-  document.getElementById('todo-clean').style.display=hasDone?'block':'none';
-  el.innerHTML=DB.todos.map(t=>`
-    <div class="todo-item">
-      <div class="todo-chk ${t.done?'done':''}" onclick="toggleTodo(${t.id})">${t.done?'✓':''}</div>
-      <div class="todo-txt ${t.done?'done':''}">${t.text}</div>
-      <button class="todo-del" onclick="deleteTodo(${t.id})">×</button>
+  const hd=DB.todos.some(t=>t.done);
+  document.getElementById('tclean').style.display=hd?'block':'none';
+  document.getElementById('todo-list').innerHTML=DB.todos.map(t=>`
+    <div class="titem">
+      <div class="tchk ${t.done?'done':''}" onclick="toggleTodo(${t.id})">${t.done?'✓':''}</div>
+      <div class="ttxt ${t.done?'done':''}">${t.text}</div>
+      <button class="tdel" onclick="deleteTodo(${t.id})">×</button>
     </div>`).join('');
   updateStats();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  스탯
-// ═══════════════════════════════════════════════════════════
-function updateStats(){
-  document.getElementById('stat-xp').textContent=DB.todayXP;
-  document.getElementById('stat-core').textContent=DB.coreChecked.filter(Boolean).length+'/3';
-  document.getElementById('stat-todo').textContent=DB.todos.filter(t=>t.done).length;
-}
+// 스탯
+function updateStats(){document.getElementById('s-xp').textContent=DB.todayXP;document.getElementById('s-core').textContent=DB.coreChecked.filter(Boolean).length+'/3';document.getElementById('s-todo').textContent=DB.todos.filter(t=>t.done).length;}
 
-// ═══════════════════════════════════════════════════════════
-//  이번 주 스트릭
-// ═══════════════════════════════════════════════════════════
+// 스트릭
 function renderStreak(){
   const days=['월','화','수','목','금','토','일'];
-  const today=new Date();const dow=today.getDay();const todayIdx=dow===0?6:dow-1;
-  const coreDone=DB.coreChecked.some(Boolean);
-  document.getElementById('streak-row').innerHTML=days.map((d,i)=>{
-    let cls='s-dot';
-    if(i<todayIdx)cls+=' done';
-    else if(i===todayIdx)cls+=coreDone?' done':' today';
-    return`<div class="${cls}"><span>${i<=todayIdx&&(i<todayIdx||coreDone)?'✓':d}</span></div>`;
+  const dow=new Date().getDay();const ti=dow===0?6:dow-1;
+  const cd=DB.coreChecked.some(Boolean);
+  document.getElementById('sdots').innerHTML=days.map((d,i)=>{
+    const done=i<ti||(i===ti&&cd);
+    const cls='sdot'+(done?' done':i===ti?' today':'');
+    return`<div class="${cls}">${done?'✓':d}</div>`;
   }).join('');
-  document.getElementById('streak-count').textContent=DB.streak>0?`🔥 ${DB.streak}일 연속 달성 중`:'';
+  document.getElementById('snum').textContent=DB.streak>0?`🔥 ${DB.streak}일 연속 달성 중`:'';
+  if(DB.streak>=3){
+    const nxt=Math.ceil(DB.streak/3)*3;
+    document.getElementById('cbanner').style.display='flex';
+    document.getElementById('cmain').textContent=`🔥 ${DB.streak}일 연속 달성 중!`;
+    document.getElementById('csub').textContent=`다음 보너스까지 ${nxt-DB.streak}일`;
+    document.getElementById('cnum').textContent=DB.streak+'일';
+  } else {document.getElementById('cbanner').style.display='none';}
 }
 
-// ═══════════════════════════════════════════════════════════
-//  콤보 배너
-// ═══════════════════════════════════════════════════════════
-function updateComboBanner(){
-  const s=DB.streak;
-  if(s<3){document.getElementById('combo-banner').style.display='none';return;}
-  const nextBonus=Math.ceil(s/3)*3;
-  document.getElementById('combo-banner').style.display='flex';
-  document.getElementById('combo-main').textContent=`🔥 ${s}일 연속 달성 중!`;
-  document.getElementById('combo-sub').textContent=`다음 보너스까지 ${nextBonus-s}일`;
-  document.getElementById('combo-badge').textContent=s+'일';
+// 운동
+let curZone='challenge';
+function setZone(z,el){curZone=z;document.querySelectorAll('.etab').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderEx();}
+function renderEx(){
+  const list=DB.exercises.filter(e=>e.zone===curZone);
+  const el=document.getElementById('ex-list');
+  if(!list.length){el.innerHTML='<div style="color:var(--txt2);text-align:center;padding:20px 0;font-size:14px">운동이 없어요<br><small>아래 버튼으로 추가해보세요</small></div>';return;}
+  el.innerHTML=list.map(e=>{
+    const done=DB.exChecked[e.id];
+    const ytbtn=e.yt
+      ?`<button class="ytbtn" onclick="openYt('${e.id}')" title="유튜브"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`
+      :`<button class="ytbtn noyt" title="영상 없음"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>`;
+    return`<div class="exitem">
+      <div class="exchk ${done?'done':''}" onclick="toggleEx('${e.id}',${e.xp})">${done?'✓':''}</div>
+      <div class="exname ${done?'done':''}">${e.name}</div>
+      ${ytbtn}
+      <div class="xpbadge">+${e.xp}XP</div>
+    </div>`;
+  }).join('');
+}
+function toggleEx(id,xp){
+  if(DB.exChecked[id]){DB.exChecked[id]=false;DB.totalXP=Math.max(0,DB.totalXP-xp);DB.todayXP=Math.max(0,DB.todayXP-xp);}
+  else{DB.exChecked[id]=true;DB.totalXP+=xp;DB.todayXP+=xp;showBadge('+'+xp+' XP');spawnP(6);}
+  saveDB();renderEx();updateHeader();updateStats();
+}
+function openYt(id){const e=DB.exercises.find(x=>x.id===id);if(!e||!e.yt)return;const t=Date.now();window.location.href='youtube://www.youtube.com/watch?v='+e.yt;setTimeout(()=>{if(Date.now()-t<400)window.open('https://www.youtube.com/watch?v='+e.yt,'_blank');},300);}
+function showAddEx(){document.getElementById('pop-addex').classList.add('show');}
+function saveNewEx(){
+  const name=document.getElementById('addname').value.trim();if(!name){alert('운동 이름을 입력해주세요.');return;}
+  const zone=document.getElementById('addzone').value;
+  const ytRaw=document.getElementById('addyt').value.trim();
+  const xp=parseInt(document.getElementById('addxp').value)||10;
+  const yt=ytRaw?extractYt(ytRaw):'';
+  DB.exercises.push({id:'u'+Date.now(),zone,name,xp,yt,custom:true});
+  saveDB();closeOv('pop-addex');
+  ['addname','addyt'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addxp').value='10';
+  renderEx();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  메모
-// ═══════════════════════════════════════════════════════════
-function openMemoModal(){
-  const d=new Date();
-  document.getElementById('memo-date').textContent=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
-  document.getElementById('memo-textarea').value=DB.todayMemo||'';
-  document.getElementById('pop-memo').classList.add('show');
-}
-function saveMemo(){
-  DB.todayMemo=document.getElementById('memo-textarea').value.trim();
-  saveDB();closePop('pop-memo');renderMemo();
-}
-function renderMemo(){
-  const wrap=document.getElementById('memo-card-wrap');
-  if(DB.todayMemo){
-    wrap.style.display='block';
-    document.getElementById('memo-display').textContent=DB.todayMemo;
-  }else{wrap.style.display='none';}
-}
+// 메모
+function openMemoPop(){const d=new Date();document.getElementById('memodate').textContent=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;document.getElementById('memotarea').value=DB.todayMemo||'';document.getElementById('pop-memo').classList.add('show');}
+function saveMemo(){DB.todayMemo=document.getElementById('memotarea').value.trim();saveDB();closeOv('pop-memo');renderMemo();}
+function renderMemo(){const c=document.getElementById('memo-card');if(DB.todayMemo){c.style.display='block';document.getElementById('memotxt').textContent=DB.todayMemo;}else c.style.display='none';}
 
-// ═══════════════════════════════════════════════════════════
-//  캘린더
-// ═══════════════════════════════════════════════════════════
+// 팝업
+function showDonePop(title,msg,xp){const em=['🎉','💪','⚡','🔥','✨','🌟'];document.getElementById('popemoji').textContent=rnd(em);document.getElementById('poptitle').textContent=title;document.getElementById('popmsg').textContent=msg;document.getElementById('popxp').textContent='+'+xp+' XP';document.getElementById('pop-done').classList.add('show');}
+function showFC(){document.getElementById('fctitle').textContent='🏆 풀콤보 달성!';document.getElementById('fcmsg').textContent=rnd(FC_MSGS);document.getElementById('fcxp').textContent='+50 XP 보너스';document.getElementById('pop-fc').classList.add('show');spawnP(16);if(DB.streak>0&&DB.streak%3===0){setTimeout(()=>{DB.totalXP+=100;DB.todayXP+=100;saveDB();updateHeader();updateStats();showBadge(`🔥 ${DB.streak}일 콤보! +100 XP`);},1600);}}
+function closeOv(id){document.getElementById(id).classList.remove('show');}
+
+// 파티클
+function spawnP(n){const em=['⚡','🔥','💪','✨','🎉','🌟','💥','🏆'];for(let i=0;i<n;i++){setTimeout(()=>{const p=document.createElement('div');p.className='particle';p.textContent=rnd(em);p.style.left=(15+Math.random()*70)+'vw';p.style.top=(30+Math.random()*30)+'vh';document.body.appendChild(p);setTimeout(()=>p.remove(),1200);},i*65);}}
+function showBadge(msg){const b=document.createElement('div');b.className='badgepop';b.textContent=msg;b.style.cssText='left:50%;top:38vh;transform:translateX(-50%)';document.body.appendChild(b);setTimeout(()=>b.remove(),2400);}
+
+// 캘린더
 let calY=new Date().getFullYear(),calM=new Date().getMonth();
 function calMove(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();}
 function renderCal(){
   const MN=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-  document.getElementById('cal-month-lbl').textContent=`${calY}년 ${MN[calM]}`;
-  const dows=['일','월','화','수','목','금','토'];
-  document.getElementById('cal-dow').innerHTML=dows.map(d=>`<div class="cal-dow-cell">${d}</div>`).join('');
-  const first=new Date(calY,calM,1).getDay();
-  const last=new Date(calY,calM+1,0).getDate();
-  const now=new Date();const todayStr=todayKey();
-  let cells='';let fullDays=0,partDays=0,monthXP=0,maxStreak=0,curS=0;
-  for(let i=0;i<first;i++)cells+=`<div class="cal-cell empty"></div>`;
+  document.getElementById('calmonth').textContent=`${calY}년 ${MN[calM]}`;
+  document.getElementById('caldow').innerHTML=['일','월','화','수','목','금','토'].map(d=>`<div class="caldowc">${d}</div>`).join('');
+  const first=new Date(calY,calM,1).getDay(),last=new Date(calY,calM+1,0).getDate(),ts=todayKey();
+  let cells='',full=0,part=0,mxp=0;
+  for(let i=0;i<first;i++)cells+=`<div class="calday empty"></div>`;
   for(let d=1;d<=last;d++){
-    const ds=`${calY}-${calM+1}-${d}`;
-    const h=DB.history[ds];
-    let cls='cal-cell';
-    if(ds===todayStr){
-      cls+=' today';
-      const coreDone=DB.coreChecked.filter(Boolean).length;
-      if(coreDone===3)cls+=' full';
-      else if(coreDone>0)cls+=' partial';
-    } else if(h){
-      if(h.full){cls+=' full';if(h.combo)cls+=' combo';fullDays++;curS++;}
-      else if(h.core>0){cls+=' partial';partDays++;curS=0;}
-      else curS=0;
-      monthXP+=h.xp||0;
-    }
-    maxStreak=Math.max(maxStreak,curS);
+    const ds=`${calY}-${calM+1}-${d}`,h=DB.history[ds];
+    let cls='calday';
+    if(ds===ts){const cd=DB.coreChecked.filter(Boolean).length;cls+=cd===3?' full':cd>0?' part':' today';}
+    else if(h){if(h.full){cls+=' full';if(h.combo)cls+=' combo';full++;}else if(h.core>0){cls+=' part';part++;}if(h.xp)mxp+=h.xp;}
     cells+=`<div class="${cls}">${d}</div>`;
   }
-  document.getElementById('cal-grid').innerHTML=cells;
-  const totalDays=Object.keys(DB.history).filter(k=>k.startsWith(`${calY}-${calM+1}-`)).length;
-  document.getElementById('cal-stats').innerHTML=`
-    <div class="cal-stat-item"><div class="cal-stat-val">${fullDays}</div><div class="cal-stat-lbl">풀콤보 달성</div></div>
-    <div class="cal-stat-item"><div class="cal-stat-val">${fullDays+partDays}</div><div class="cal-stat-lbl">달성일 수</div></div>
-    <div class="cal-stat-item"><div class="cal-stat-val">${monthXP}</div><div class="cal-stat-lbl">월 XP</div></div>
-    <div class="cal-stat-item"><div class="cal-stat-val">${maxStreak}</div><div class="cal-stat-lbl">최장 연속</div></div>
-    <div class="cal-stat-item"><div class="cal-stat-val">${DB.totalXP}</div><div class="cal-stat-lbl">총 누적 XP</div></div>
-    <div class="cal-stat-item"><div class="cal-stat-val">${DB.streak}</div><div class="cal-stat-lbl">현재 스트릭</div></div>`;
+  document.getElementById('calgrid').innerHTML=cells;
+  document.getElementById('calstats').innerHTML=`
+    <div class="calstat"><div class="calstatval">${full}</div><div class="calstatlbl">풀콤보 달성</div></div>
+    <div class="calstat"><div class="calstatval">${full+part}</div><div class="calstatlbl">달성일 수</div></div>
+    <div class="calstat"><div class="calstatval">${mxp}</div><div class="calstatlbl">월 XP</div></div>
+    <div class="calstat"><div class="calstatval">${DB.streak}</div><div class="calstatlbl">현재 스트릭</div></div>
+    <div class="calstat"><div class="calstatval">${DB.totalXP}</div><div class="calstatlbl">총 누적 XP</div></div>
+    <div class="calstat"><div class="calstatval">${Object.keys(DB.history).length}</div><div class="calstatlbl">총 기록일</div></div>`;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  성장 탭
-// ═══════════════════════════════════════════════════════════
+// 성장
 function renderGrowth(){
   const li=getLv(DB.totalXP);
-  document.getElementById('char-emoji').textContent=li.char.emoji;
-  document.getElementById('char-name').textContent=li.char.name;
-  document.getElementById('char-sub').textContent=li.char.sub;
-  document.getElementById('char-xp-fill').style.width=li.pct+'%';
-  document.getElementById('char-xp-txt').textContent=`${li.cur} / ${li.need} XP (Lv.${li.lv})`;
-  // 캐릭터 그리드
-  document.getElementById('char-grid').innerHTML=CHARS.map(c=>{
-    const active=li.lv>=c.lvMin&&li.lv<=c.lvMax;
-    return`<div class="char-stage ${active?'current':''}">
-      <div class="char-stage-emoji">${c.emoji}</div>
-      <div class="char-stage-name">${c.name}</div>
-      <div class="char-stage-lv">Lv.${c.lvMin}${c.lvMax<999?'~'+c.lvMax:'+'}</div>
-    </div>`;
-  }).join('');
-  renderRewards();
+  document.getElementById('charemoji').textContent=li.char.emoji;document.getElementById('charname').textContent=li.char.name;document.getElementById('charsub').textContent=li.char.sub;
+  document.getElementById('charxpfill').style.width=li.pct+'%';document.getElementById('charxptxt').textContent=`${li.cur} / ${li.need} XP (Lv.${li.lv})`;
+  document.getElementById('chargrid').innerHTML=CHARS.map(c=>{const a=li.lv>=c.min&&li.lv<=c.max;return`<div class="charstage ${a?'current':''}"><div class="charstageemoji">${c.emoji}</div><div class="charstagename">${c.name}</div><div class="charstagelv">Lv.${c.min}${c.max<999?'~'+c.max:'+'}</div></div>`;}).join('');
+  renderRw();
 }
-
-// ─── 보상 로드맵 ───
-let rewardEditing=false;
-function toggleRewardEdit(){
-  rewardEditing=!rewardEditing;
-  document.getElementById('reward-edit-btn').textContent=rewardEditing?'완료':'편집';
-  renderRewards();
-}
-function renderRewards(){
+let rwEdit=false;
+function toggleRwEdit(){rwEdit=!rwEdit;document.getElementById('rweditbtn').textContent=rwEdit?'완료':'편집';renderRw();}
+function renderRw(){
   const li=getLv(DB.totalXP);
-  document.getElementById('reward-list').innerHTML=DB.rewards.map((r,i)=>{
-    const achieved=li.lv>=r.lv;
-    if(rewardEditing){
-      return`<div class="reward-item">
-        <div class="reward-lv">Lv.${r.lv}</div>
-        <div style="flex:1">
-          <input style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;font-family:inherit;outline:none;margin-bottom:4px" value="${r.name}" onchange="DB.rewards[${i}].name=this.value;saveDB()">
-          <input style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-family:inherit;outline:none;color:var(--txt2)" value="${r.msg}" onchange="DB.rewards[${i}].msg=this.value;saveDB()">
-        </div>
-      </div>`;
-    }
-    return`<div class="reward-item">
-      <div class="reward-lv">Lv.${r.lv}</div>
-      <div class="reward-info" style="flex:1">
-        <div class="reward-name">${r.name}</div>
-        <div class="reward-msg">${r.msg}</div>
-      </div>
-      <div class="reward-status">${achieved?'✅':'🔒'}</div>
-    </div>`;
+  document.getElementById('rwlist').innerHTML=DB.rewards.map((r,i)=>{
+    if(rwEdit)return`<div class="rwrow"><div class="rwlv">Lv.${r.lv}</div><div style="flex:1;display:flex;flex-direction:column;gap:5px"><input style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)" value="${r.name}" onchange="DB.rewards[${i}].name=this.value;saveDB()"><input style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt2)" value="${r.msg}" onchange="DB.rewards[${i}].msg=this.value;saveDB()"></div></div>`;
+    return`<div class="rwrow"><div class="rwlv">Lv.${r.lv}</div><div style="flex:1"><div class="rwname">${r.name}</div><div class="rwmsg">${r.msg}</div></div><div class="rwsts">${li.lv>=r.lv?'✅':'🔒'}</div></div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  커스텀 루틴 추가
-// ═══════════════════════════════════════════════════════════
-function showAddForm(){document.getElementById('pop-add').classList.add('show');}
-function saveCustomEx(){
-  const name=document.getElementById('f-name').value.trim();if(!name)return;
-  const zone=document.getElementById('f-zone').value;
-  const unit=document.getElementById('f-unit').value.trim()||'회';
-  const xp=parseInt(document.getElementById('f-coin').value)||10;
-  const ytRaw=document.getElementById('f-yt').value.trim();
-  let yt='';
-  if(ytRaw){const m=ytRaw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);if(m)yt=m[1];}
-  DB.exercises.push({id:'c'+Date.now(),name,zone,cat:'custom',unit,xp,yt,custom:true});
-  saveDB();closePop('pop-add');
-  ['f-name','f-unit','f-yt'].forEach(id=>document.getElementById(id).value='');
-  renderEx();renderYtEditList();
-}
-
-// ═══════════════════════════════════════════════════════════
-//  유튜브 모달 (iframe 임베드 — 프리미엄 광고 없음)
-// ═══════════════════════════════════════════════════════════
-function openYT(exId, name){
-  const e=allExercises().find(x=>x.id===exId);
-  const finalId=e?e.yt:'';
-  if(!finalId){
-    alert('영상 주소가 없어요.\n⚙️ 설정 탭에서 유튜브 링크를 추가해주세요.');
-    return;
-  }
-  const ytApp='youtube://www.youtube.com/watch?v='+finalId;
-  const ytWeb='https://www.youtube.com/watch?v='+finalId;
-  const start=Date.now();
-  window.location.href=ytApp;
-  setTimeout(()=>{if(Date.now()-start<400)window.open(ytWeb,'_blank');},300);
-}
-function closeYT(){
-  document.getElementById('yt-frame').src='';
-  document.getElementById('yt-modal').classList.remove('show');
-}
-
-// ─── 홈 탭 아바타 클릭 → 설정 탭으로 이동 ───
-function uploadAvatar(){
-  goPage('settings', document.querySelectorAll('.tab')[3]);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  팝업
-// ═══════════════════════════════════════════════════════════
-function showDonePopup(title,msg,xp){
-  const emojis=['🎉','💪','⚡','🔥','✨','🌟'];
-  document.getElementById('pop-emoji').textContent=emojis[Math.floor(Math.random()*emojis.length)];
-  document.getElementById('pop-title').textContent=title;
-  document.getElementById('pop-msg').textContent=msg;
-  document.getElementById('pop-coin').textContent=`+${xp} XP`;
-  document.getElementById('pop-done').classList.add('show');
-}
-function showFullCombo(){
-  const msg=FC_MSGS[Math.floor(Math.random()*FC_MSGS.length)];
-  document.getElementById('fc-title').textContent='🏆 풀콤보 달성!';
-  document.getElementById('fc-msg').textContent=msg;
-  document.getElementById('fc-coin').textContent='+50 XP 보너스';
-  document.getElementById('pop-fullcombo').classList.add('show');
-  spawnParticles(16);
-  // 3의 배수 콤보 보너스
-  if(DB.streak>0&&DB.streak%3===0){
-    setTimeout(()=>{
-      DB.totalXP+=100;DB.todayXP+=100;saveDB();updateHeader();updateStats();
-      showBadge(`🔥 ${DB.streak}일 콤보! +100 XP`);
-    },1500);
-  }
-}
-function closePop(id){document.getElementById(id).classList.remove('show');}
-
-// ═══════════════════════════════════════════════════════════
-//  파티클 & 뱃지
-// ═══════════════════════════════════════════════════════════
-function spawnParticles(n){
-  const em=['⚡','🔥','💪','✨','🎉','🌟','💥','🏆'];
-  for(let i=0;i<n;i++){
-    setTimeout(()=>{
-      const p=document.createElement('div');p.className='particle';
-      p.textContent=em[Math.floor(Math.random()*em.length)];
-      p.style.left=(15+Math.random()*70)+'vw';
-      p.style.top=(30+Math.random()*30)+'vh';
-      document.body.appendChild(p);setTimeout(()=>p.remove(),1200);
-    },i*70);
-  }
-}
-function showBadge(msg){
-  const b=document.createElement('div');b.className='badge-txt';
-  b.textContent=msg;b.style.left='50%';b.style.top='40vh';
-  b.style.transform='translateX(-50%)';b.style.color='#FF9F0A';
-  b.style.background='rgba(255,159,10,.12)';b.style.padding='6px 16px';
-  b.style.borderRadius='20px';b.style.fontWeight='700';
-  document.body.appendChild(b);
-  setTimeout(()=>b.remove(),2500);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  설정 탭
-// ═══════════════════════════════════════════════════════════
+// 설정
+const ZNLBL={challenge:'챌린지',stretch:'스트레칭',upper:'상체',core:'허리·코어',lower:'하체'};
 function renderSettings(){
-  applyAvatarEverywhere();
-  renderYtEditList();
-}
-
-const ZONE_LABELS={'upper':'상체','core':'허리·코어','lower':'하체','stretch':'스트레칭','challenge':'챌린지'};
-
-function renderYtEditList(){
-  const all=allExercises();
-  document.getElementById('yt-edit-list').innerHTML=all.map((e,i)=>{
+  applyAvatarAll();
+  document.getElementById('exeditlist').innerHTML=DB.exercises.map((e,i)=>{
     const ytUrl=e.yt?`https://youtu.be/${e.yt}`:'';
-    return`<div style="padding:14px 0;border-bottom:1px solid var(--border);">
+    return`<div class="exedit">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;background:var(--pl);color:var(--pd);border-radius:6px;padding:2px 8px;font-weight:600">${ZONE_LABELS[e.zone]||e.zone}</span>
-          ${e.custom?'<span style="font-size:11px;background:var(--gl);color:#0F6E56;border-radius:6px;padding:2px 8px;font-weight:600">내 루틴</span>':''}
-        </div>
-        ${e.custom?`<button onclick="deleteEx('${e.id}')" style="font-size:12px;color:#FF3B30;background:none;border:1px solid #FF3B30;border-radius:7px;padding:3px 9px;cursor:pointer">삭제</button>`:''}
+        <span class="exeditzone">${ZNLBL[e.zone]||e.zone}</span>
+        ${e.custom?`<button class="exdelbtn" onclick="deleteEx('${e.id}')">삭제</button>`:''}
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:6px">
-        <input id="en-${e.id}" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:14px;font-weight:600;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)" value="${e.name}" placeholder="운동 이름">
-        <input id="eu-${e.id}" style="width:52px;padding:8px 6px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);text-align:center;color:var(--txt)" value="${e.unit}" placeholder="단위">
-      </div>
-      <div style="display:flex;gap:6px">
-        <input id="ey-${e.id}" style="flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:inherit;outline:none;background:var(--bg);color:var(--txt)" value="${ytUrl}" placeholder="유튜브 주소 (선택)">
-        <button onclick="saveEx('${e.id}')" style="padding:8px 14px;background:var(--p);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0">저장</button>
+      <div class="exeditrow"><input class="exeditinp" id="en-${e.id}" value="${e.name}" placeholder="운동 이름"></div>
+      <div class="exeditrow">
+        <input class="exeditinp" id="ey-${e.id}" value="${ytUrl}" placeholder="유튜브 링크 (선택)">
+        <button class="exsavebtn" onclick="saveExEdit('${e.id}')">저장</button>
       </div>
     </div>`;
   }).join('');
 }
-
-function saveEx(id){
-  const idx=DB.exercises.findIndex(e=>e.id===id);
-  if(idx<0)return;
-  const name=document.getElementById('en-'+id).value.trim();
-  const unit=document.getElementById('eu-'+id).value.trim();
+function saveExEdit(id){
+  const idx=DB.exercises.findIndex(e=>e.id===id);if(idx<0)return;
+  const name=document.getElementById('en-'+id).value.trim();if(!name){alert('운동 이름을 입력해주세요.');return;}
   const ytRaw=document.getElementById('ey-'+id).value.trim();
-  if(!name){alert('운동 이름을 입력해주세요.');return;}
-  let yt='';
-  if(ytRaw){
-    const m=ytRaw.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-    if(m)yt=m[1];
-    else{alert('유튜브 주소 형식이 맞지 않아요.\nhttps://youtu.be/XXXXX 형태로 넣어주세요.');return;}
-  }
-  DB.exercises[idx].name=name;
-  DB.exercises[idx].unit=unit||DB.exercises[idx].unit;
-  DB.exercises[idx].yt=yt;
-  saveDB();
-  renderEx();
-  showBadge('저장됨 ✓');
+  let yt='';if(ytRaw){yt=extractYt(ytRaw);if(!yt){alert('유튜브 주소 형식이 맞지 않아요.\nhttps://youtu.be/XXXXX 형태로 넣어주세요.');return;}}
+  DB.exercises[idx].name=name;DB.exercises[idx].yt=yt;saveDB();renderEx();showBadge('저장됨 ✓');
 }
+function deleteEx(id){if(!confirm('이 운동을 삭제할까요?'))return;DB.exercises=DB.exercises.filter(e=>e.id!==id);delete DB.exChecked[id];saveDB();renderEx();renderSettings();}
+function resetToday(){if(!confirm('오늘 데이터를 초기화할까요?\n누적 XP와 히스토리는 유지됩니다.'))return;DB.coreChecked=[0,0,0];DB.bonusChecked=[0,0,0];DB.exChecked={};DB.todayXP=0;DB.todayMemo='';DB.todos=[];saveDB();renderCore();renderBonus();renderTodos();renderEx();updateHeader();updateStats();renderStreak();renderMemo();showBadge('오늘 데이터 초기화됨');}
+function resetAll(){if(!confirm('정말 모든 데이터를 삭제할까요?\n이 작업은 되돌릴 수 없어요.'))return;localStorage.removeItem(KEY);location.reload();}
 
-function deleteEx(id){
-  if(!confirm('이 운동을 삭제할까요?'))return;
-  DB.exercises=DB.exercises.filter(e=>e.id!==id);
-  delete DB.exChecked[id];
-  saveDB();renderEx();renderYtEditList();
-}
-
-// ─── 아바타 (설정 탭) ───
-// ═══════════════════════════════════════════════════════════
-//  프로필 사진
-// ═══════════════════════════════════════════════════════════
-function triggerAvatarPick(){
-  document.getElementById('avatar-file-input').click();
-}
-
-function handleAvatarFile(input){
-  const file=input.files[0];
-  if(!file)return;
+// 프로필 사진
+function triggerAvatar(){document.getElementById('avatar-input').click();}
+function handleAvatar(input){
+  const file=input.files[0];if(!file)return;
   const reader=new FileReader();
-  reader.onload=function(e){
+  reader.onload=function(ev){
     const img=new Image();
     img.onload=function(){
-      // 최대 300px로 리사이즈 후 저장
-      const canvas=document.createElement('canvas');
-      const max=300;
-      let w=img.width,h=img.height;
-      if(w>max||h>max){
-        const ratio=Math.min(max/w,max/h);
-        w=Math.round(w*ratio);
-        h=Math.round(h*ratio);
-      }
-      canvas.width=w;
-      canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      DB.avatar=canvas.toDataURL('image/jpeg',0.85);
-      saveDB();
-      applyAvatarEverywhere();
-      showBadge('프로필 사진 저장됨 ✓');
-      // input 초기화 (같은 사진 재선택 가능하도록)
-      input.value='';
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
+      const c=document.createElement('canvas');const M=300;let w=img.width,h=img.height;
+      if(w>M||h>M){const r=Math.min(M/w,M/h);w=Math.round(w*r);h=Math.round(h*r);}
+      c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+      DB.avatar=c.toDataURL('image/jpeg',0.82);saveDB();applyAvatarAll();showBadge('프로필 사진 변경됨 ✓');
+    };img.src=ev.target.result;
+  };reader.readAsDataURL(file);input.value='';
+}
+function clearAvatar(){DB.avatar='';saveDB();applyAvatarAll();showBadge('초기화됨');}
+function applyAvatarAll(){
+  const li=getLv(DB.totalXP);const em=li.char.emoji;
+  const ha=document.getElementById('avatar-el');
+  if(ha)ha.innerHTML=DB.avatar?`<img src="${DB.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:`<span style="font-size:28px">${em}</span>`;
+  const sa=document.getElementById('settings-avatar');
+  if(sa)sa.innerHTML=DB.avatar?`<img src="${DB.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:`<span style="font-size:34px">${em}</span>`;
 }
 
-function clearAvatar(){
-  DB.avatar='';
-  saveDB();
-  applyAvatarEverywhere();
-  showBadge('초기화됨');
-}
+// PWA
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
-function applyAvatarEverywhere(){
-  const li=getLv(DB.totalXP);
-  const emoji=li.char.emoji;
-
-  // 1. 홈 탭 아바타
-  const homeAv=document.getElementById('avatar-el');
-  if(homeAv){
-    if(DB.avatar){
-      homeAv.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else {
-      homeAv.innerHTML=`<span style="font-size:26px">${emoji}</span>`;
-    }
-  }
-
-  // 2. 설정 탭 미리보기
-  const settingsAv=document.getElementById('settings-avatar');
-  if(settingsAv){
-    if(DB.avatar){
-      settingsAv.innerHTML=`<img src="${DB.avatar}" alt="프로필" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else {
-      settingsAv.innerHTML=`<span style="font-size:32px">${emoji}</span>`;
-    }
-  }
-}
-
-// 기존 함수명 호환 유지
-function applyAvatar(){applyAvatarEverywhere();}
-function uploadAvatarFromSettings(input){handleAvatarFile(input);}
-
-// ─── 데이터 관리 ───
-function resetToday(){
-  if(!confirm('오늘 데이터를 초기화할까요?\n누적 XP와 히스토리는 유지됩니다.'))return;
-  DB.coreChecked=[0,0,0];DB.bonusChecked=[0,0,0];
-  DB.exChecked={};DB.exInputs={};DB.todayXP=0;DB.todayMemo='';
-  DB.todos=[];saveDB();
-  renderCore();renderBonus();renderTodos();renderEx();updateHeader();updateStats();renderStreak();renderMemo();
-  showBadge('오늘 데이터 초기화됨');
-}
-function resetAll(){
-  if(!confirm('정말 모든 데이터를 삭제할까요?\n이 작업은 되돌릴 수 없어요.'))return;
-  localStorage.removeItem(KEY);location.reload();
-}
-
-// ═══════════════════════════════════════════════════════════
-//  PWA Service Worker
-// ═══════════════════════════════════════════════════════════
-if('serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
-
-// ═══════════════════════════════════════════════════════════
-//  초기화
-// ═══════════════════════════════════════════════════════════
-function init(){
-  checkReset();
-  renderQuote();
-  applyAvatarEverywhere();
-  updateHeader();
-  renderCore();renderBonus();renderTodos();renderEx();
-  updateStats();renderStreak();renderMemo();updateComboBanner();
-}
+// 초기화
+function init(){checkReset();renderQuote();applyAvatarAll();updateHeader();renderCore();renderBonus();renderTodos();renderEx();updateStats();renderStreak();renderMemo();}
 init();
 </script>
 </body>
